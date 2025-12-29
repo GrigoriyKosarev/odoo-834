@@ -22,14 +22,12 @@ class AccountMoveLineBalance(models.Model):
         currency_field='company_currency_id',
         readonly=True,
         store=True,
-        group_operator='max'
     )
     bio_end_balance = fields.Monetary(
         string='End Balance',
         currency_field='company_currency_id',
         readonly=True,
         store=True,
-        group_operator='max'
     )
 
     _sql_constraints = [
