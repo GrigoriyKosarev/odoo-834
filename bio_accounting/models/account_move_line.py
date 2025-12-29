@@ -16,14 +16,12 @@ class AccountMoveLine(models.Model):
         currency_field="company_currency_id",
         store=True,
         compute="_compute_bio_balances",
-        group_operator="max",
     ) # ODOO-834
     bio_end_balance = fields.Monetary(
         string="End Balance",
         currency_field="company_currency_id",
         store=True,
         compute="_compute_bio_balances",
-        group_operator="max",
     ) # ODOO-834
 
 
@@ -65,49 +63,69 @@ class AccountMoveLine(models.Model):
 
     def _update_balances_incremental(self):
         """
-        Масове оновлення таблиці balances тільки для рядків self.
-        Використовує SQL window function для цих рядків і їх "партнера + рахунок".
+        Масове оновлення таблиці balances для рядків self та всіх наступних рядків
+        в тих же партиціях (account_id + partner_id).
+        Використовує SQL window function.
         """
         if not self:
             return
 
-        # Отримуємо унікальні комбінації account_id + partner_id
-        account_partner_ids = [(line.account_id.id, line.partner_id.id or 0) for line in self]
+        # Збираємо унікальні партиції та мінімальні дати
+        partitions = {}  # {(account_id, partner_id): min_date}
+        for line in self:
+            key = (line.account_id.id, line.partner_id.id if line.partner_id else False)
+            if key not in partitions or line.date < partitions[key]:
+                partitions[key] = line.date
 
-        query_parts = []
-        for account_id, partner_id in account_partner_ids:
-            partner_clause = 'COALESCE(partner_id,0) = %s' % partner_id
-            query_parts.append(f"(account_id = {account_id} AND {partner_clause})")
+        # Будуємо domain для пошуку всіх рядків які потрібно оновити
+        domain_parts = []
+        for (account_id, partner_id), min_date in partitions.items():
+            domain_parts.append([
+                ('account_id', '=', account_id),
+                ('partner_id', '=', partner_id),
+                ('date', '>=', min_date),
+                ('parent_state', '=', 'posted'),
+            ])
 
-        domain_sql = " OR ".join(query_parts)
-        if not domain_sql:
+        if not domain_parts:
             return
 
-        query = f"""
+        # Об'єднуємо всі domain через OR
+        lines_to_update = self.env['account.move.line']
+        for domain in domain_parts:
+            lines_to_update |= self.env['account.move.line'].search(domain)
+
+        if not lines_to_update:
+            return
+
+        # Виконуємо оновлення через SQL window function
+        query = """
             INSERT INTO bio_account_move_line_balance (move_line_id, bio_initial_balance, bio_end_balance, company_currency_id)
             SELECT
                 aml.id,
-                SUM(aml2.debit - aml2.credit)
-                    OVER (PARTITION BY aml.account_id, COALESCE(aml.partner_id,0)
-                          ORDER BY aml.date, aml.id
-                          ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS initial_balance,
-                SUM(aml2.debit - aml2.credit)
-                    OVER (PARTITION BY aml.account_id, COALESCE(aml.partner_id,0)
-                          ORDER BY aml.date, aml.id
-                          ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS end_balance,
+                COALESCE(
+                    SUM(aml.debit - aml.credit) OVER (
+                        PARTITION BY aml.account_id, COALESCE(aml.partner_id,0)
+                        ORDER BY aml.date, aml.id
+                        ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
+                    ), 0
+                ) AS initial_balance,
+                COALESCE(
+                    SUM(aml.debit - aml.credit) OVER (
+                        PARTITION BY aml.account_id, COALESCE(aml.partner_id,0)
+                        ORDER BY aml.date, aml.id
+                        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+                    ), 0
+                ) AS end_balance,
                 aml.company_currency_id
             FROM account_move_line aml
-            LEFT JOIN account_move_line aml2
-                ON aml2.account_id = aml.account_id
-                AND COALESCE(aml2.partner_id,0) = COALESCE(aml.partner_id,0)
-                AND aml2.date <= aml.date
-            WHERE aml.parent_state='posted' AND ({domain_sql})
+            WHERE aml.parent_state='posted' AND aml.id IN %s
             ON CONFLICT (move_line_id) DO UPDATE
             SET bio_initial_balance = EXCLUDED.bio_initial_balance,
                 bio_end_balance = EXCLUDED.bio_end_balance,
                 company_currency_id = EXCLUDED.company_currency_id;
             """
-        self.env.cr.execute(query)
+        self.env.cr.execute(query, (tuple(lines_to_update.ids),))
 
     @api.depends('price_unit', 'tax_ids', 'currency_id', 'company_id')
     def _compute_price_unit_is_zero(self):  # ODOO-231  # ODOO-472
