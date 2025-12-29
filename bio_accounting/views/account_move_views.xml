@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_move_form_inherit_bio" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.bio</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="priority" eval="120"/>
+        <field name="arch" type="xml">
+             <!-- ODOO-803 begin -->
+            <xpath expr="//button[@name='button_draft']" position="attributes">
+                <attribute name="groups">bio_accounting.bio_group_available_reset_to_draft_account_move</attribute>
+            </xpath>
+            <!-- ODOO-803 end -->
+            <xpath expr="//group[@id=&quot;header_left_group&quot;]/field[1]" position="attributes">
+                <attribute name="domain">[('is_company', '=', True), ('type', '!=', 'private'), ('company_id', 'in', (False, company_id))]</attribute>
+            </xpath>
+            <xpath expr="//group[@id=&quot;header_left_group&quot;]/field[2]" position="attributes">
+                <attribute name="domain">[('is_company', '=', True), ('type', '!=', 'private'), ('company_id', 'in', (False, company_id))]</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name=&quot;invoice_tab&quot;]/field[@name=&quot;invoice_line_ids&quot;]/tree/field[@name=&quot;product_id&quot;]" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+
+            <!-- ODOO-231  ODOO-472 -->
+            <xpath expr="//page[@name=&quot;invoice_tab&quot;]/field[@name=&quot;invoice_line_ids&quot;]/tree" position="inside">
+                <field name="price_unit_is_zero" invisible="1"/>
+            </xpath>
+            <xpath expr="//page[@name=&quot;invoice_tab&quot;]/field[@name=&quot;invoice_line_ids&quot;]/tree" position="attributes">
+                <attribute name="class">bio_line_tree</attribute>
+                <attribute name="decoration-info">price_unit_is_zero</attribute>
+            </xpath>
+            <!-- ODOO-231  ODOO-472 end -->
+
+            <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="date_of_receipt_by_buyer" style="font-weight:bold;"/>
+                <field name="bio_reverse_account_move" string="Credit Note"
+                       attrs="{'invisible': [('bio_reverse_account_move', '=', False)]}"/>
+            </xpath>
+
+             <!-- ODOO-461 begin -->
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='tax_ids']" position="after">
+                <field name="tax_amount"/>
+            </xpath>
+             <!-- ODOO-461 end -->
+
+            <!-- ODOO-476 begin-->
+            <xpath expr="//group[@name='sale_info_group']" position="inside">
+                <field name="bio_factoring"/>
+            </xpath>
+            <!-- ODOO-476 end-->
+
+            <!-- ODOO-477 begin -->
+<!--            <xpath expr="//form" position="attributes">-->
+<!--                <attribute name="context">{'bio_save_from_ui': True}</attribute>-->
+<!--            </xpath>-->
+            <xpath expr="//button[@name='action_post']" position="attributes">
+                <attribute name="context">{'bio_save_from_ui': True}</attribute>
+            </xpath>
+            <!-- ODOO-477 end -->
+
+            <!--ODOO-693 begin-->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button"
+                        name="action_bio_view_reverse_entryes"
+                        type="object"
+                        icon="fa-book"
+                        attrs="{'invisible': ['|', ('bio_reverse_entry_count', '=', 0),
+                        ('move_type', 'not in', ('out_refund','out_invoice','in_invoice','in_refund'))]}">
+                    <field string="Reverse Entryes" name="bio_reverse_entry_count" widget="statinfo"/>
+                </button>
+            </xpath>
+
+            <xpath expr="//field[@name='line_ids']//tree//field[@name='contract_id']" position="after">
+                <field name="product_id" optional="hide"/>
+                <field name="quantity" optional="hide"/>
+            </xpath>
+            <!--ODOO-693 end-->
+
+            <!-- ODOO-820 begin -->
+            <xpath expr="//page[@name=&quot;invoice_tab&quot;]/field[@name=&quot;invoice_line_ids&quot;]/tree/field[@name='product_uom_id']" position="after">
+                <field name="bio_product_barcode" optional="show"/>
+                <field name="bio_product_packaging_barcode" optional="show"/>
+            </xpath>
+            <!-- ODOO-820 end -->
+
+        </field>
+    </record>
+
+    <record id="view_invoice_tree_inherit_bio" model="ir.ui.view">
+        <field name="name">account.invoice.tree.inherit.bio</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+
+            <!-- ODOO-474 -->
+            <xpath expr="//field[@name=&quot;invoice_partner_display_name&quot;]" position="after">
+                <field name="partner_shipping_id" optional="hide"/>
+            </xpath>
+            <!-- ODOO-474 end -->
+
+            <xpath expr="//field[@name='date']" position="before">
+                <field name="date_of_receipt_by_buyer" optional="hide"/>
+            </xpath>
+
+            <!-- ODOO-476 begin-->
+            <xpath expr="//field[@name='invoice_date_due']" position="after">
+                <field name="bio_factoring" optional="show"/>
+            </xpath>
+            <!-- ODOO-476 end-->
+
+            <!-- ODOO-462 -->
+            <xpath expr="//field[@name=&quot;invoice_date_due&quot;]" position="after">
+                <!-- <field name="invoice_payments_widget" string="Payment date" widget="payment" optional="hide"/> -->
+                <field name="bio_payments" string="Payments" widget="text" optional="hide"/>
+            </xpath>
+            <!-- ODOO-462 end -->
+
+            <xpath expr="//field[@name='payment_state']" position="before">
+                <field name="l10n_ro_edi_transaction" optional="hide"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_invoice_search_inherit_bio" model="ir.ui.view">
+        <field name="name">account.invoice.search.inherit.bio</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//search" position="inside">
+                <!-- ODOO-476 begin -->
+                <filter string="Factoring"
+                        name="bio_factoring"
+                        context="{'group_by': 'bio_factoring'}"/>
+                <filter string="Is Factoring"
+                        name="filter_is_factoring"
+                        domain="[('bio_factoring', '=', True)]"/>
+                <filter string="Not Factoring"
+                        name="filter_not_factoring"
+                        domain="[('bio_factoring', '=', False)]"/>
+                <!-- ODOO-476 end -->
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="bio_action_reverse_entry" model="ir.actions.server">
+        <field name="name">Reverse Entry</field>
+        <field name="model_id" ref="account.model_account_move" />
+        <field name="binding_model_id" ref="account.model_account_move" />
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+if records:
+    action = records[0].action_bio_reverse_entry()
+else:
+    action = False
+action
+    ]]></field>
+    </record>
+    <!--ODOO-693 begin-->
+
+</odoo>

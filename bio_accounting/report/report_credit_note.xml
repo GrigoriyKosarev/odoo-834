@@ -1,0 +1,860 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_creit_note_correction_polska">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="lang" t-value="o.partner_id.lang"/>
+                <t t-call="bio_accounting.report_creit_note_correction_document_polska" t-lang="lang"/>
+            </t>
+        </t>
+    </template>
+
+
+    <template id="report_creit_note_correction_document_polska">
+        <t t-call="web.basic_layout">
+            <style>
+                .table-cell-1 {
+                padding: 0;
+                font-size: 12px;
+                font-weight: normal;
+                border-right: 1px solid black;
+                border-bottom: none;
+                }
+                .table-cell-2-3 {
+                padding: 0;
+                font-size: 12px;
+                font-weight: normal;
+                border-right: 1px solid black;
+                border-bottom: none;
+                border-top: none;
+                }
+            </style>
+
+            <t t-set="o" t-value="o.with_context(lang=lang)"/>
+            <t t-set="forced_vat" t-value="o.fiscal_position_id.foreign_vat"/>
+            <t t-set="picking_data" t-value="o._get_values_from_move_id()"/>
+            <t t-set="sales_data" t-value="o._get_values_from_sale_order_polska()"/>
+            <t t-if="not o" t-set="o" t-value="doc"/>
+
+            <t t-if="o.move_type == 'out_refund'">
+                <t t-if="not company">
+                    <!-- Multicompany -->
+                    <t t-if="company_id">
+                        <t t-set="company" t-value="company_id"/>
+                    </t>
+                    <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
+                        <t t-set="company" t-value="o.company_id.sudo()"/>
+                    </t>
+                    <t t-else="else">
+                        <t t-set="company" t-value="res_company"/>
+                    </t>
+                </t>
+
+                <table class="table-borderless" style="width:100%; margin-bottom: 20px;">
+                    <tbody>
+                        <tr>
+                            <td rowspan="7" style=" font-size: 14px; font-weight: normal; padding:0; width: 34%;">
+                                <span>
+                                    <img t-if="company.logo" t-att-src="image_data_uri(company.logo)"
+                                         style="max-height: 100px;" alt="Logo"/>
+                                </span>
+                                <br/>
+                                <span>
+                                    <t t-esc="company.partner_id.display_name"/>
+                                </span>
+
+                                <br/>
+                                <span t-esc="company.partner_id.street"/>
+                                <span t-esc="company.partner_id.zip"/>
+                                <span t-esc="company.partner_id.city"/>
+
+                                <!--Add fields-->
+                                <br/>
+                                <span>NIP:</span>
+                                <span t-esc="company.vat"/>
+                                <!---->
+
+                                <br/>
+                                <t t-if="company.partner_id.phone">
+                                    <span>Tel:</span>
+                                    <span t-esc="company.partner_id.phone"/>
+                                </t>
+
+                                <!--Add fields-->
+                                <br/>
+                                <t t-if="o.partner_bank_id">
+                                    <span t-esc="o.partner_bank_id.bank_id.name"/>
+                                    <br/>
+                                    <span t-esc="o.partner_bank_id.acc_number"/>
+                                </t>
+
+                            </td>
+                            <!---->
+
+                            <td style="padding:0; width: 32%"/>
+
+                            <td align="center"
+                                style="width: 34%; border-top: #000000 1px solid; background-color: #ccc; padding:0; font-size: 15px">
+                                <span>Miejsce wystawienia:</span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding:0;"/>
+                            <td align="center" style="padding:0; font-size: 15px; font-weight: normal;">
+                                <!--Value-->
+                                <span>
+                                    <t t-esc="company.partner_id.city"/>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:0;"/>
+                            <td align="center"
+                                style="border-top: #000000 1px solid; background-color: #ccc; padding:0; font-size: 15px; font-weight: normal;">
+                                <span>Data zakończenia dostawy/usług</span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding:0;"/>
+                            <td align="center" style="padding:0; font-size: 15px; font-weight: normal;">
+                                <!--Value-->
+                                <span>
+                                    <t t-if="picking_data['picking_id_number'] ==''">
+                                        <span class="col-5" t-esc="o.invoice_date" t-options="{'widget': 'date'}"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="col-5" t-esc="picking_data['scheduled_date']"
+                                              t-options="{'widget': 'date'}"/>
+                                    </t>
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding:0;"/>
+                            <td align="center"
+                                style="border-top: #000000 1px solid; background-color: #ccc; padding:0; font-size: 15px; font-weight: normal;">
+                                <span>Data wystawienia:</span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding:0;"/>
+                            <td align="center"
+                                style="border-bottom: #000000 1px solid; padding:0; font-size: 15px; font-weight: normal;">
+                                <!--Value-->
+                                <span>
+                                    <t t-esc="o.invoice_date" t-options="{'widget': 'date'}"/>
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding:0;"/>
+                            <td style="padding:0;"/>
+                        </tr>
+
+
+                    </tbody>
+                </table>
+
+
+                <table class="table-borderless" style="width:100%; margin-bottom: 8px">
+                    <tbody>
+                        <tr>
+                            <th align="center"
+                                style="width: 46%; border-top: #000000 1px solid; background-color: #ccc; padding:0; font-size: 14px; font-weight: normal;">
+                                <span>Sprzedawca:</span>
+                            </th>
+                            <th style="width: 8%;  padding:0;"/>
+                            <th align="center"
+                                style="width: 46%; border-top: #000000 1px solid; background-color: #ccc; padding:0;font-size: 14px; font-weight: normal;">
+                                <span>Nabywca:</span>
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <td style=" font-size: 14px; font-weight: normal;">
+                                <span>
+                                    <t t-esc="company.partner_id.display_name"/>
+                                </span>
+                            </td>
+                            <td style="padding:0;"/>
+                            <td style=" padding:0; font-size: 14px; font-weight: normal;">
+                                <span>
+                                    <t t-esc="o.partner_id.display_name"/>
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="border-bottom: #000000 1px solid; padding:0; font-size: 14px; font-weight: normal;">
+                                <span>
+                                    <t t-esc="company.partner_id.street"/>
+                                </span>
+                                <br/>
+                                <span>
+                                    <t t-esc="company.partner_id.zip"/>
+                                </span>
+                                <span>
+                                    <t t-esc="company.partner_id.city"/>
+                                </span>
+                                <br/>
+
+                                <!--Add fields-->
+                                <span>NIP:</span>
+                                <span t-esc="company.vat"/>
+                                <!---->
+                            </td>
+
+                            <td style="padding:0"/>
+
+                            <td style="border-bottom: #000000 1px solid; padding:0; font-size: 14px; font-weight: normal;">
+                                <span>
+                                    <t t-esc="o.partner_id.street"/>
+                                </span>
+                                <br/>
+
+                                <span>
+                                    <t t-esc="o.partner_id.zip"/>
+                                </span>
+                                <span>
+                                    <t t-esc="o.partner_id.city"/>
+                                </span>
+                                <br/>
+
+                                <!--Add field-->
+                                <span>NIP:</span>
+                                <span t-esc="o.partner_id.vat">
+                                </span>
+                                <!---->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+                <!--Add fields-->
+                <div style="text-align:center; margin-bottom: 20px; margin-top: 15px">
+                    <span style="font-size: 21px; font-weight: normal;">Korekta faktury VAT</span>
+                    <span t-esc="sales_data['invoice_number']"/>
+                    /UA/
+                    <span t-esc="o.invoice_date" t-options="{'widget': 'date', 'format': 'MM'}"/>/
+                    <span t-esc="o.invoice_date" t-options="{'widget': 'date', 'format': 'YY'}"/>
+                    <span>oryginał</span>
+                    <br/>
+                    <span style="font-size: 11pt; font-weight: normal;">do dokumentu </span>
+                    <!--                <span t-esc="o.reversed_entry_id.name"/>-->
+                    <span t-if="o.reversed_entry_id">
+                        <t t-set="sales_data_reversed" t-value="o.reversed_entry_id._get_values_from_sale_order_polska()"/>
+                        <span style="font-size: 21px; font-weight: normal;">VAT</span>
+                        <span t-esc="sales_data_reversed['invoice_number']"/> /UA/
+                        <span t-esc="o.reversed_entry_id.invoice_date" t-options="{'widget': 'date', 'format': 'MM'}"/>/
+                        <span t-esc="o.reversed_entry_id.invoice_date" t-options="{'widget': 'date', 'format': 'YY'}"/>
+
+<!--                        <span t-esc="o.reversed_entry_id.name"/>-->
+                    </span>
+                    <span>z dnia</span>
+                    <span t-esc="o.invoice_date" t-options="{'widget': 'date'}"/>
+                </div>
+
+                <table style="width:100%; margin-bottom: 20px; border:none;">
+                    <thead>
+                        <tr align="center" style="background-color: #ccc; vertical-align:top;">
+                            <th style="width: 5%; padding:0; font-size: 13px; font-weight: normal;">
+                                <span>Lp.</span>
+                            </th>
+                            <th style="width: 10%; padding:0; font-size: 13px; font-weight: normal;">
+                                <span>Symbol</span>
+                            </th>
+                            <th style="width: 28%; padding:0; font-size: 13px; font-weight: normal;">
+                                <span>Nazwa / opis jednorazowy</span>
+                            </th>
+
+                            <th style="width: 8%; padding:0; font-size: 13px; font-weight: normal;">
+                                <span>Ilość</span>
+                            </th>
+
+                            <th style="width: 5%; padding:0; font-size: 13px; font-weight: normal;">
+                                <span>j.m.</span>
+                            </th>
+
+                            <th style="width: 4%; padding:0; font-size: 13px; font-weight: normal;">
+                                <span>Rabat [%]</span>
+                            </th>
+
+                            <th style="width: 10%; padding:0; font-size: 13px; font-weight: normal;">
+                                <span>Cena jednostkowa netto</span>
+                            </th>
+                            <th style="width: 8%; padding:0; font-size: 13px; font-weight: normal;">
+                                <span>Wartość netto</span>
+                            </th>
+                            <th style="width: 4%; padding:0; font-size: 13px; font-weight: normal;">
+                                <span>VAT [%]</span>
+                            </th>
+                            <th style="width: 10%; padding:0; font-size: 13px; font-weight: normal;">
+                                <span>Kwota VAT</span>
+                            </th>
+                            <th style="width: 8%; padding:0; font-size: 13px; font-weight: normal;">
+                                <span>Wartość brutto</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="current_subtotal" t-value="0"/>
+                        <t t-set="current_total" t-value="0"/>
+                        <t t-set="line_number" t-value="1"/>
+                        <!--                    <t t-set="lines" t-value="o.invoice_line_ids.sorted(key=lambda l: (-l.sequence, l.date, l.move_name, -l.id), reverse=True)"/>-->
+                        <t t-set="lines" t-value="o._credit_note_reversal_lines()"/>
+                        <t t-set="credit_note_invoice_line_ids" t-value="o.invoice_line_ids.ids"/>
+    <!--                    <span style="font-size: 18px; font-weight: bold;">-->
+    <!--                        <t t-esc="credit_note_invoice_line_ids"/>-->
+    <!--                    </span>-->
+
+                        <t t-set="sum_price_netto" t-value="0"/>
+                        <t t-set="sum_kwota_vat" t-value="0"/>
+                        <t t-set="sum_wartost_brutto" t-value="0"/>
+                        <t t-set="sum_tax_amount" t-value="0"/>
+
+                        <t t-set="sum_kor_price_netto" t-value="0"/>
+                        <t t-set="sum_kor_kwota_vat" t-value="0"/>
+                        <t t-set="sum_kor_wartost_brutto" t-value="0"/>
+
+                        <t t-set="sum_po_kor_price_netto" t-value="0"/>
+                        <t t-set="sum_po_kor_kwota_vat" t-value="0"/>
+                        <t t-set="sum_po_kor_wartost_brutto" t-value="0"/>
+
+                        <t t-foreach="lines" t-as="line">
+                            <t t-set="credit_note_line"
+                               t-value="o._credit_note_info(line.id, credit_note_invoice_line_ids)"/>
+
+                            <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal"
+                               groups="account.group_show_line_subtotals_tax_excluded"/>
+                            <t t-set="current_total" t-value="current_total + line.price_total"
+                               groups="account.group_show_line_subtotals_tax_included"/>
+
+                            <t t-set="sum_tax_amount" t-value="line.tax_ids.amount"/>
+                            <t t-set="sum_price_netto" t-value="sum_price_netto + line.price_subtotal"/>
+<!--                            <t t-set="sum_kwota_vat" t-value="sum_kwota_vat + (line.price_subtotal * line.tax_ids.amount / 100)"/>-->
+<!--                            <t t-set="sum_wartost_brutto" t-value="sum_wartost_brutto + (line.price_subtotal * (1 + (line.tax_ids.amount or 0.0) / 100.0))"/>-->
+                            <t t-set="sum_kwota_vat" t-value="sum_kwota_vat + line.tax_amount"/>
+                            <t t-set="sum_wartost_brutto" t-value="sum_wartost_brutto + line.price_total"/>
+
+                            <t t-set="sum_kor_price_netto" t-value="sum_kor_price_netto + credit_note_line.get('kor_price_subtotal',0)"/>
+                            <t t-set="sum_kor_kwota_vat" t-value="sum_kor_kwota_vat + credit_note_line.get('kor_kwota_vat',0)"/>
+                            <t t-set="sum_kor_wartost_brutto" t-value="sum_kor_wartost_brutto + credit_note_line.get('kor_wartost_brutto',0)"/>
+
+                            <t t-set="sum_po_kor_price_netto" t-value="sum_po_kor_price_netto + credit_note_line.get('po_kor_price_subtotal',0)"/>
+                            <t t-set="sum_po_kor_kwota_vat" t-value="sum_po_kor_kwota_vat + credit_note_line.get('po_kor_kwota_vat',0)"/>
+                            <t t-set="sum_po_kor_wartost_brutto" t-value="sum_po_kor_wartost_brutto + credit_note_line.get('po_kor_wartost_brutto',0)"/>
+
+                            <tr style="border: none;">
+                                <!--Lp.-->
+                                <td align="center" class="table-cell-1">
+                                    <span>
+                                        <t t-esc="line_number"/>
+                                    </span>
+                                </td>
+
+                                <!--Symbol-->
+                                <td align="center" class="table-cell-1">
+                                    <span>
+                                        <t t-esc="line.product_id.default_code"/>
+                                    </span>
+                                </td>
+                                <!--Nazwa-->
+                                <td align="center" class="table-cell-1">
+                                    <!--                                <span t-esc="line.name"/>-->
+                                    <span t-field="line.product_id.name" t-options="{'widget': 'text'}"/>
+                                </td>
+
+                                <td align="right" class="table-cell-1">
+                                    <span>
+                                        <t t-esc="line.quantity"/>
+                                    </span>
+
+                                </td>
+
+                                <td align="center" class="table-cell-1">
+                                    <span>
+                                        <!--                                    j.m.-->
+                                        <t t-esc="line.product_uom_id.name"/>
+                                    </span>
+                                </td>
+                                <td align="center" class="table-cell-1">
+                                    <span>
+                                        <!--                                    Rabat [%]-->
+                                        <t t-esc="line.discount"/>
+                                    </span>
+                                </td>
+                                <td align="right" class="table-cell-1">
+                                    <span>
+                                        <t t-esc="'{:.2f}'.format(line.price_unit * (1 - (line.discount or 0.0) / 100.0))"/>
+                                    </span>
+                                </td>
+
+                                <!--Wartość netto-->
+                                <td align="right" class="table-cell-1">
+                                    <span>
+                                        <t t-esc="'{:.2f}'.format(line.price_subtotal)"/>
+                                    </span>
+                                </td>
+
+                                <!--VAT [%]-->
+                                <td align="center" class="table-cell-1">
+                                    <span>
+                                        <t t-esc="line.tax_ids.amount"/>
+                                    </span>
+                                </td>
+
+                                <!--Kwota VAT-->
+                                <td align="right" class="table-cell-1">
+                                    <span>
+                                        <t t-esc="'{:.2f}'.format(line.price_subtotal * line.tax_ids.amount / 100)"/>
+                                    </span>
+                                </td>
+
+                                <!--Wartość brutto-->
+                                <td align="right" class="table-cell-1">
+                                    <span>
+                                        <t t-esc="'{:.2f}'.format(line.price_subtotal * (1 + (line.tax_ids.amount or 0.0) / 100.0))"/>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr style="border: none;">
+                                <td class="table-cell-2-3"></td>
+                                <td class="table-cell-2-3"></td>
+                                <td class="table-cell-2-3">Korekta:</td>
+                                <td align="right" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="credit_note_line.get('kor_quantity',0)"/>
+<!--                                        <t t-if="o.price_change_mode == True">-->
+<!--                                            <t t-esc="-1*credit_note_line.get('kor_quantity',0)"/>-->
+<!--                                        </t>-->
+<!--                                        <t t-else="">-->
+<!--                                            <t t-esc="credit_note_line.get('kor_quantity',0)"/>-->
+<!--                                        </t>-->
+                                    </span>
+                                </td>
+                                <td align="center" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="credit_note_line.get('kor_product_uom_name', '')"/>
+                                    </span>
+                                </td>
+                                <td align="center" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="credit_note_line.get('kor_discount',0)"/>
+                                    </span>
+                                </td>
+                                <td align="right" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="'{:.2f}'.format(credit_note_line.get('kor_price_netto',0))"/>
+                                    </span>
+                                </td>
+                                <td align="right" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="'{:.2f}'.format(credit_note_line.get('kor_price_subtotal', 0))"/>
+                                    </span>
+                                </td>
+                                <td align="center" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="credit_note_line.get('kor_tax_ids_amount', 0)"/>
+                                    </span>
+                                </td>
+                                <td align="right" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="'{:.2f}'.format(credit_note_line.get('kor_kwota_vat', 0))"/>
+                                    </span>
+                                </td>
+                                <td align="right" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="'{:.2f}'.format(credit_note_line.get('kor_wartost_brutto', 0))"/>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr style="border: none;">
+                                <td class="table-cell-2-3"></td>
+                                <td class="table-cell-2-3"></td>
+                                <td class="table-cell-2-3">Po korekcie:</td>
+                                <td align="right" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="credit_note_line.get('po_kor_quantity',0)"/>
+                                    </span>
+                                </td>
+                                <td align="center" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="credit_note_line.get('po_kor_product_uom_name', '')"/>
+                                    </span>
+                                </td>
+                                <td align="center" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="credit_note_line.get('po_kor_discount',0)"/>
+                                    </span>
+                                </td>
+                                <td align="right" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="'{:.2f}'.format(credit_note_line.get('po_kor_price_netto',0))"/>
+                                    </span>
+                                </td>
+                                <td align="right" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="'{:.2f}'.format(credit_note_line.get('po_kor_price_subtotal', 0))"/>
+                                    </span>
+                                </td>
+                                <td align="center" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="credit_note_line.get('po_kor_tax_ids_amount', 0)"/>
+                                    </span>
+                                </td>
+                                <td align="right" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="'{:.2f}'.format(credit_note_line.get('po_kor_kwota_vat', 0))"/>
+                                    </span>
+                                </td>
+                                <td align="right" class="table-cell-2-3">
+                                    <span>
+                                        <t t-esc="'{:.2f}'.format(credit_note_line.get('po_kor_wartost_brutto', 0))"/>
+                                    </span>
+                                </td>
+                            </tr>
+    <!--                        <tr style="border: none;">-->
+    <!--                            <td style="padding:0; font-size: 12px; font-weight: normal;border: none;"></td>-->
+    <!--                            <td colspan="10" class="table-cell-2-3">Przyczyna korekty: Przyznanie rabatu za-->
+    <!--                                przekroczenie progu obrotu-->
+    <!--                            </td>-->
+    <!--                        </tr>-->
+                            <t t-set="line_number" t-value="line_number + 1"/>
+                        </t>
+    <!--                    <span style="font-size: 18px; font-weight: bold;">-->
+    <!--                        <t t-esc="credit_note_invoice_line_ids"/>-->
+    <!--                    </span>-->
+                    </tbody>
+                </table>
+
+    <!--            <t t-set="group_tax_lines" t-value="o._get_group_tax_line()"/>-->
+                <table align="right" class="table table-bordered" style="width:60%; margin-bottom: 15px">
+                    <thead>
+                        <tr align="center" style="background-color: #ccc; vertical-align:top; border: #000000 1px solid;">
+                            <th style="padding:0; font-size: 13px; font-weight: normal;">
+                                <span>według stawki VAT</span>
+                            </th>
+                            <th style="padding:0; font-size: 13px; font-weight: normal;">
+                                <span>wartość netto</span>
+                            </th>
+                            <th style="padding:0; font-size: 13px; font-weight: normal;">
+                                <span>kwota VAT</span>
+                            </th>
+                            <th style="padding:0; font-size: 13px; font-weight: normal;">
+                                <span>wartość brutto</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        <t t-set="current_subtotal" t-value="0"/>
+                        <t t-set="current_total" t-value="0"/>
+    <!--                    <t t-set="credit_note_tax_values" t-value="o._credit_note_tax_values()"/>-->
+                        <!--                    <t t-set="lines"-->
+                        <!--                       t-value="o.invoice_line_ids.sorted(key=lambda l: (-l.sequence, l.date, l.move_name, -l.id), reverse=True)"/>-->
+
+    <!--                    <t t-foreach="credit_note_tax_values['invoice_tax_ids']" t-as="group">-->
+                            <!--                        <tr style="border: #000000 1px solid;">-->
+                            <tr style="border: none;">
+                                <!--według stawki VAT-->
+                                <td style="padding:0; font-size: 12px; font-weight: normal;border: none;border-left: #000000 1px solid;border-right: #000000 1px solid;">
+                                    <span>Podstawowy podatek VAT</span>
+                                    <span>
+                                        <t t-esc="'{:.2f}'.format(sum_tax_amount)"/>
+                                    </span>
+                                    <span>%</span>
+                                </td>
+                                <!--wartość netto-->
+                                <td align="right" style="padding:0; font-size: 12px; font-weight: normal;border: none;">
+                                    <span>
+    <!--                                    <t t-esc="'{:.2f}'.format(group['price_subtotal'])"/>-->
+                                        <t t-esc="'{:.2f}'.format(sum_price_netto)"/>
+                                    </span>
+                                </td>
+                                <!--kwota VAT-->
+                                <td align="right"
+                                    style="padding:0; font-size: 12px; font-weight: normal;border: none;border-left: #000000 1px solid;border-right: #000000 1px solid;">
+                                    <span>
+    <!--                                    <t t-esc="'{:.2f}'.format(group['kwota_vat'])"/>-->
+                                        <t t-esc="'{:.2f}'.format(sum_kwota_vat)"/>
+                                    </span>
+                                </td>
+                                <!--wartość brutto-->
+                                <td align="right"
+                                    style="padding:0; font-size: 12px; font-weight: normal;border: none;border-right: #000000 1px solid;">
+                                    <span>
+    <!--                                    <t t-esc="'{:.2f}'.format(group['vartost_brutto'])"/>-->
+                                        <t t-esc="'{:.2f}'.format(sum_wartost_brutto)"/>
+                                    </span>
+                                </td>
+                            </tr>
+
+    <!--                        <t t-set="sum_kor_price_netto" t-value="0"/>-->
+    <!--                        <t t-set="sum_kor_kwota_vat" t-value="0"/>-->
+    <!--                        <t t-set="sum_kor_wartost_brutto" t-value="0"/>-->
+                            <tr style="border: none;">
+                                <!--według stawki VAT-->
+                                <td style="padding:0; font-size: 12px; font-weight: normal;border: none;border-left: #000000 1px solid;border-right: #000000 1px solid;">
+                                    <span>Korekta:</span>
+                                </td>
+                                <!--wartość netto-->
+                                <td align="right" style="padding:0; font-size: 12px; font-weight: normal;border: none;">
+                                    <span>
+    <!--                                    <t t-esc="'{:.2f}'.format(credit_note_tax_values['kor_ids']['price_subtotal'])"/>-->
+                                        <t t-esc="'{:.2f}'.format(sum_kor_price_netto)"/>
+                                    </span>
+                                </td>
+                                <!--kwota VAT-->
+                                <td align="right"
+                                    style="padding:0; font-size: 12px; font-weight: normal;border: none;border-left: #000000 1px solid;border-right: #000000 1px solid;">
+                                    <span>
+    <!--                                    <t t-esc="'{:.2f}'.format(credit_note_tax_values['kor_ids']['kwota_vat'])"/>-->
+                                        <t t-esc="'{:.2f}'.format(sum_kor_kwota_vat)"/>
+                                    </span>
+                                </td>
+                                <!--wartość brutto-->
+                                <td align="right"
+                                    style="padding:0; font-size: 12px; font-weight: normal;border: none;border-right: #000000 1px solid;">
+                                    <span>
+    <!--                                    <t t-esc="'{:.2f}'.format(credit_note_tax_values['kor_ids']['vartost_brutto'])"/>-->
+                                        <t t-esc="'{:.2f}'.format(sum_kor_wartost_brutto)"/>
+                                    </span>
+                                </td>
+                            </tr>
+
+                            <tr style="border: none;">
+                                <!--według stawki VAT-->
+                                <td style="padding:0; font-size: 12px; font-weight: normal;border: none;border-left: #000000 1px solid;border-right: #000000 1px solid;border-bottom: #000000 1px solid;">
+                                    <span>Po korekcie:</span>
+                                </td>
+                                <!--wartość netto-->
+                                <td align="right"
+                                    style="padding:0; font-size: 12px; font-weight: normal;border: none;border-bottom: #000000 1px solid;">
+                                    <span>
+    <!--                                    <t t-esc="'{:.2f}'.format(credit_note_tax_values['po_kor_ids']['price_subtotal'])"/>-->
+                                        <t t-esc="'{:.2f}'.format(sum_po_kor_price_netto)"/>
+                                    </span>
+                                </td>
+                                <!--kwota VAT-->
+                                <td align="right"
+                                    style="padding:0; font-size: 12px; font-weight: normal;border: none;border-left: #000000 1px solid;border-right: #000000 1px solid;border-bottom: #000000 1px solid;">
+                                    <span>
+    <!--                                    <t t-esc="'{:.2f}'.format(credit_note_tax_values['po_kor_ids']['kwota_vat'])"/>-->
+                                        <t t-esc="'{:.2f}'.format(sum_po_kor_kwota_vat)"/>
+                                    </span>
+                                </td>
+                                <!--wartość brutto-->
+                                <td align="right"
+                                    style="padding:0; font-size: 12px; font-weight: normal;border: none;border-right: #000000 1px solid;border-bottom: #000000 1px solid;">
+                                    <span>
+                                        <t t-esc="'{:.2f}'.format(sum_po_kor_wartost_brutto)"/>
+<!--                                        <t t-esc="'{:.2f}'.format(888)"/>-->
+                                    </span>
+                                </td>
+                            </tr>
+    <!--                    </t>-->
+
+    <!--                    <tr style="border: none;">-->
+    <!--                        <td align="right" style="padding:0; font-size: 12px; font-weight: normal;border: none;">-->
+    <!--                            <span>Razem korekta:</span>-->
+    <!--                        </td>-->
+    <!--                        <td align="right" style="padding:0; font-size: 12px; font-weight: normal;border: none;">-->
+    <!--                            <span>-->
+    <!--                                <t t-esc="'{:.2f}'.format(credit_note_tax_values['kor_ids']['price_subtotal'])"/>-->
+    <!--                            </span>-->
+    <!--                        </td>-->
+    <!--                        <td align="right" style="padding:0; font-size: 12px; font-weight: normal;border: none;">-->
+    <!--                            <span>-->
+    <!--                                <t t-esc="'{:.2f}'.format(credit_note_tax_values['kor_ids']['kwota_vat'])"/>-->
+    <!--                            </span>-->
+
+    <!--                        </td>-->
+    <!--                        <td align="right" style="padding:0; font-size: 12px; font-weight: normal;border: none;">-->
+    <!--                            <span>-->
+    <!--                                <t t-esc="'{:.2f}'.format(credit_note_tax_values['kor_ids']['vartost_brutto'])"/>-->
+    <!--                            </span>-->
+    <!--                        </td>-->
+    <!--                    </tr>-->
+
+    <!--                    <tr style="border: none;">-->
+    <!--                        <td align="right" style="padding:0; font-size: 12px; font-weight: normal;border: none;">-->
+    <!--                            <span>Razem po korekcie:</span>-->
+    <!--                        </td>-->
+    <!--                        <td align="right" style="padding:0; font-size: 12px; font-weight: normal;border: none;">-->
+    <!--                            <span>-->
+    <!--                                <t t-esc="'{:.2f}'.format(credit_note_tax_values['po_kor_ids']['price_subtotal'])"/>-->
+    <!--                            </span>-->
+    <!--                        </td>-->
+    <!--                        <td align="right" style="padding:0; font-size: 12px; font-weight: normal;border: none;">-->
+    <!--                            <span>-->
+    <!--                                <t t-esc="'{:.2f}'.format(credit_note_tax_values['po_kor_ids']['kwota_vat'])"/>-->
+    <!--                            </span>-->
+
+    <!--                        </td>-->
+    <!--                        <td align="right" style="padding:0; font-size: 12px; font-weight: normal;border: none;">-->
+    <!--                            <span>-->
+    <!--                                <t t-esc="'{:.2f}'.format(credit_note_tax_values['po_kor_ids']['vartost_brutto'])"/>-->
+    <!--                            </span>-->
+    <!--                        </td>-->
+    <!--                    </tr>-->
+
+                    </tbody>
+                </table>
+
+                <table align="right" class="table-borderless" style="width:50%; margin-bottom: 15px; ">
+                    <tbody>
+                        <tr style="font-size: 20px; font-weight: bold; border-top: #000000 1px solid; background-color: #ccc;">
+                            <td width="50%" colspan="2" align="left" style="padding:0;">
+                                <span>Razem do zwrotu:</span>
+                            </td>
+                            <td width="50%" align="right" style="padding:0;">
+                                <span>
+                                    <t t-esc="'{:.2f}'.format(o.amount_total)"/>
+                                </span>
+                                <span>
+                                    <t t-esc="o.currency_id.symbol"/>
+                                </span>
+                            </td>
+                        </tr>
+
+    <!--                    <tr style="border-bottom: #000000 1px solid;">-->
+    <!--                        <td width="50%" colspan="2" align="left" style="padding:0;font-size: 20px; font-weight: bold;">-->
+    <!--                            <span>Słownie:</span>-->
+    <!--                        </td>-->
+    <!--                        <td align="left" style="padding:0;font-size: 12px;">-->
+    <!--                            <span>-->
+    <!--                                trzy tysiące osiemset sześćdziesiąt osiem PLN 30/100-->
+    <!--                            </span>-->
+    <!--                        </td>-->
+    <!--                    </tr>-->
+                    </tbody>
+                </table>
+
+                <table align="left" class="table-borderless" style="width:60%; margin-bottom: 8px; font-weight: bold;">
+                    <tbody>
+                        <tr style="font-weight: bold;">
+                            <td width="40%" style="padding:0;">
+                                <span>Pozostało do zapłaty:</span>
+                            </td>
+                            <td style="padding:0;">
+                                <span>
+    <!--                                <t t-esc="o.amount_total"/>-->
+                                    <t t-esc="'{:.2f}'.format(sum_po_kor_wartost_brutto)"/>
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr style="font-weight: bold;">
+                            <td style="padding:0;">
+                                <span>W terminie:</span>
+                            </td>
+
+
+                            <td style="padding:0;">
+                                <span>
+                                    <t t-esc="o._credit_note_w_termine()"/>
+                                </span>
+    <!--                            <t t-if="o.invoice_payment_term_id">-->
+    <!--                                <span t-field="o.invoice_payment_term_id.name">-->
+    <!--                                    =-->
+    <!--                                </span>-->
+    <!--                                <t t-set="date_payment"-->
+    <!--                                   t-value="o.invoice_payment_term_id.line_ids[0]._get_due_date(o.invoice_date)"/>-->
+    <!--                                <span t-esc="date_payment"/>-->
+    <!--                            </t>-->
+
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+                <table class="table-borderless" style="width:100%; margin-bottom: 8px">
+                    <tbody>
+                        <tr>
+                            <th align="center"
+                                style="width: 46%; border-top: #000000 1px solid; background-color: #ccc; padding:0; font-size: 14px; font-weight: normal;border-left: #000000 1px solid;border-right: #000000 1px solid;">
+                                <span>Wystawił(a):</span>
+                            </th>
+                            <th style="width: 8%;  padding:0; border-right: #000000 1px solid;"/>
+                            <th align="center"
+                                style="width: 46%; border-top: #000000 1px solid; background-color: #ccc; padding:0;font-size: 14px; font-weight: normal;border-left: #000000 1px solid;border-right: #000000 1px solid;">
+                                <span>Odebrał(a):</span>
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <td style="border-left: #000000 1px solid;border-right: #000000 1px solid;">
+                                <span style="display: inline-block; width: 12px;"></span>
+                            </td>
+                            <td style="border-right: #000000 1px solid;">
+                                <span style="display: inline-block; width: 12px;"></span>
+                            </td>
+                            <td style="border-left: #000000 1px solid; border-right: #000000 1px solid;">
+                                <span style="display: inline-block; width: 12px;"></span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="border-left: #000000 1px solid;border-right: #000000 1px solid;">
+                                <span style="display: inline-block; width: 12px;"></span>
+                            </td>
+                            <td style="border-right: #000000 1px solid;">
+                                <span style="display: inline-block; width: 12px;"></span>
+                            </td>
+                            <td style="border-left: #000000 1px solid; border-right: #000000 1px solid;">
+                                <span style="display: inline-block; width: 12px;"></span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="border-left: #000000 1px solid;border-right: #000000 1px solid;">
+                                <span style="display: inline-block; width: 12px;"></span>
+                            </td>
+                            <td style="border-right: #000000 1px solid;">
+                                <span style="display: inline-block; width: 12px;"></span>
+                            </td>
+                            <td style="border-left: #000000 1px solid;border-right: #000000 1px solid;">
+                                <span style="display: inline-block; width: 12px;"></span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="border-bottom: #000000 1px solid; border-left: #000000 1px solid;border-right: #000000 1px solid;">
+                                <span style="display: inline-block; width: 12px;"></span>
+                            </td>
+                            <td style="border-right: #000000 1px solid;">
+                                <span style="display: inline-block; width: 12px;"></span>
+                            </td>
+                            <td style="border-bottom: #000000 1px solid; border-left: #000000 1px solid;border-right: #000000 1px solid;">
+                                <span style="display: inline-block; width: 12px;"></span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="center" style="font-size: 12px; font-weight: normal;">
+                                <span>Podpis osoby upoważnionej do wystawienia korekty</span>
+                            </td>
+                            <td>
+                                <span style="display: inline-block; width: 12px;"></span>
+                            </td>
+                            <td align="center" style="font-size: 12px; font-weight: normal;">
+                                <span>Podpis osoby upoważnionej do odbioru korekty</span>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </t>
+        </t>
+    </template>
+
+</odoo>

@@ -1,0 +1,685 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* bio_accounting
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e-20240331\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-21 10:15+0000\n"
+"PO-Revision-Date: 2024-11-21 10:15+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: bio_accounting
+#: model:ir.actions.report,print_report_name:bio_accounting.bio_accounting_creit_note_correction
+msgid "(object._get_report_base_filename())"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "/UA/"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid ""
+"<br/>\n"
+"                            <span>NIP:</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_invoice_document_inherit_bio
+msgid ""
+"<span class=\"mb-2 col-2\">Factura circula fara semnatura si stampila cf. "
+"art.V, alin (2) din Ordonanta nr.17/2015 si art. 319 alin (29) din Legea nr."
+" 227/2015 privind Codul fiscal.</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_invoice_document_inherit_bio
+msgid ""
+"<span class=\"mb-2 col-2\">Intracommunity sales: VAT exempt intra-community operation according to Council Directive 2006/112/EC of 28 November2006 on the common system of value added tax.</span>\n"
+"                                <br/><br/>\n"
+"                                <span class=\"mb-2 col-2\">Export sales: VAT exempt according to art. 294 paragraph (1)- a)-i) regarding the Fiscal Code.</span>\n"
+"                                <br/><br/>\n"
+"                                <span class=\"mb-2 col-2\">The invoice is available without signature and stamp ac. art. V, paragraph (2) of Ordinance no. 17/2015 and art. 319paragraph(29) of Law no. 227/2015 regarding the Fiscal Code.</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid ""
+"<span style=\"font-size: 21px; font-weight: normal;\">Korekta faktury "
+"VAT</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span style=\"font-size: 21px; font-weight: normal;\">VAT</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>%</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_invoice_document_inherit_bio
+msgid "<span>CIF:</span>"
+msgstr "<span>Adószám:</span>"
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Cena jednostkowa netto</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_invoice_document_polska_inherit_bio
+msgid "<span>Cena netto przed rabatem</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Data wystawienia:</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Data zakończenia dostawy/usług</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Ilość</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Korekta:</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Kwota VAT</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Lp.</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Miejsce wystawienia:</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>NIP:</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Nabywca:</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Nazwa / opis jednorazowy</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_invoice_document_inherit_bio
+msgid "<span>No. Reg. Com. Brasov:</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Odebrał(a):</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Po korekcie:</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Podpis osoby upoważnionej do odbioru korekty</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Podpis osoby upoważnionej do wystawienia korekty</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Podstawowy podatek VAT</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Pozostało do zapłaty:</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_invoice_document_polska_inherit_bio
+msgid "<span>Rabat [%]</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Razem do zwrotu:</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Sprzedawca:</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Symbol</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Tel:</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>VAT [%]</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>W terminie:</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Wartość brutto</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Wartość netto</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>Wystawił(a):</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>j.m.</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>kwota VAT</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid ""
+"<span>oryginał</span>\n"
+"                <br/>\n"
+"                    <span style=\"font-size: 11pt; font-weight: normal;\">do dokumentu </span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>wartość brutto</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>wartość netto</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>według stawki VAT</span>"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "<span>z dnia</span>"
+msgstr ""
+
+#. module: bio_accounting
+#. odoo-python
+#: code:addons/bio_accounting/models/account_move.py:0
+#, python-format
+msgid ""
+"Attempting to return a different price than was shipped on the invoice!!!"
+msgstr "A számlán szereplőtől eltérő árat próbálok visszaküldeni!!!"
+
+#. module: bio_accounting
+#. odoo-python
+#: code:addons/bio_accounting/models/account_move.py:0
+#, python-format
+msgid ""
+"Attempting to return a larger quantity than was shipped on the invoice!!!"
+msgstr "A számlán szereplőnél nagyobb mennyiséget próbálok visszaküldeni!!!"
+
+#. module: bio_accounting
+#. odoo-python
+#: code:addons/bio_accounting/models/account_move.py:0
+#, python-format
+msgid "Attempting to return an item that did not ship on invoice!!!"
+msgstr "Nem számlán szereplő terméket próbálok visszaküldeni!!!"
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_account_invoice_report__product_barcode
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_account_invoice_report_search_inherit_bio
+msgid "Barcode"
+msgstr "Vonalkód"
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__commission_percentage
+msgid "Bonus in %"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__business_type_id
+msgid "Business line"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields.selection,name:bio_accounting.selection__bio_marginality_report__state__cancel
+msgid "Cancelled"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__main_partner_id
+msgid "Client"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__cluster_id
+msgid "Cluster"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model,name:bio_accounting.model_res_company
+msgid "Companies"
+msgstr "Vállalatok"
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__company_id
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_bio_marginality_report_search
+msgid "Company"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_res_company__consolidated_rate_id
+msgid "Consolidated Rate"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__consolidated_result_europe
+msgid "Consolidated result Europe"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__consolidated_result_europe_summ
+msgid "Consolidated result Europe Σ"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__country_id
+msgid "Country"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_bio_marginality_report_search
+msgid "Credit Notes"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model,name:bio_accounting.model_res_currency
+msgid "Currency"
+msgstr "Pénznem"
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__partner_id
+msgid "Customer"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields.selection,name:bio_accounting.selection__bio_marginality_report__move_type__out_refund
+msgid "Customer Credit Note"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields.selection,name:bio_accounting.selection__bio_marginality_report__move_type__out_invoice
+msgid "Customer Invoice"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_bio_marginality_report_search
+msgid "Customers"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_bio_marginality_report_search
+msgid "Date"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_account_bank_statement_line__date_of_receipt_by_buyer
+#: model:ir.model.fields,field_description:bio_accounting.field_account_invoice_report__date_of_receipt_by_buyer
+#: model:ir.model.fields,field_description:bio_accounting.field_account_move__date_of_receipt_by_buyer
+#: model:ir.model.fields,field_description:bio_accounting.field_account_payment__date_of_receipt_by_buyer
+msgid "Date of Receipt by Buyer"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_account_invoice_report_search_inherit_bio
+msgid "Date receipt by buyer"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields.selection,name:bio_accounting.selection__bio_marginality_report__state__draft
+msgid "Draft"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_bio_marginality_report_search
+msgid "Draft Invoices"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__invoice_date_due
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_bio_marginality_report_search
+msgid "Due Date"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__gross_price
+msgid "Gross Price"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__gross_price_summ
+msgid "Gross Price Σ"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__gross_margin
+msgid "Gross margin"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__gross_margin_summ
+msgid "Gross margin Σ"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_bio_marginality_report_search
+msgid "Group By"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_account_invoice_report__bio_headquarter
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_account_invoice_report_search_inherit_bio
+msgid "Headquarter"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__id
+msgid "ID"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__internal_reference
+msgid "Index"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__invoice_date
+msgid "Invoice Date"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_account_bank_statement_line__invoice_month
+#: model:ir.model.fields,field_description:bio_accounting.field_account_move__invoice_month
+#: model:ir.model.fields,field_description:bio_accounting.field_account_payment__invoice_month
+msgid "Invoice Month"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__state
+msgid "Invoice Status"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_bio_marginality_report_search
+msgid "Invoiced"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_bio_marginality_report_search
+msgid "Invoices"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model,name:bio_accounting.model_account_invoice_report
+msgid "Invoices Statistics"
+msgstr "Számla statisztikák"
+
+#. module: bio_accounting
+#: model:ir.model,name:bio_accounting.model_account_move
+msgid "Journal Entry"
+msgstr "Naplóbejegyzés"
+
+#. module: bio_accounting
+#: model:ir.model,name:bio_accounting.model_account_move_line
+msgid "Journal Item"
+msgstr "Napló tétel"
+
+#. module: bio_accounting
+#: model:ir.actions.report,name:bio_accounting.bio_accounting_creit_note_correction
+msgid "Korekta faktury"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "Korekta:"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "Logo"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__margin_amount
+msgid "Margin Amount"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.actions.act_window,name:bio_accounting.action_bio_marginality_report_all
+#: model:ir.model,name:bio_accounting.model_bio_marginality_report
+#: model:ir.ui.menu,name:bio_accounting.menu_bio_marginality_report
+#: model_terms:ir.ui.view,arch_db:bio_accounting.bio_marginality_report_view_tree
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_bio_marginality_report_search
+msgid "Marginality Report"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__invoice_month
+msgid "Month"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__move_id
+msgid "Move"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__move_type
+msgid "Move Type"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_bio_marginality_report_search
+msgid "My Invoices"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__net_price
+msgid "Net Price"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__net_price_summ
+msgid "Net Price Σ"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields.selection,name:bio_accounting.selection__bio_marginality_report__state__posted
+msgid "Open"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__transportation_costs_summ
+msgid "Other variable costs Σ"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_bio_marginality_report_search
+msgid "Partner"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.report_creit_note_correction_document_polska
+msgid "Po korekcie:"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_account_move_line__price_unit_is_zero
+msgid "Price Unit Is Zero"
+msgstr "Az áregység nulla"
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__product_id
+msgid "Product"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__product_categ_id
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_bio_marginality_report_search
+msgid "Product Category"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_account_invoice_report_search_inherit_bio
+msgid "Product doesn't contain 'Opening balance'"
+msgstr "Product doesn'`'t contain 'Opening balance'"
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__quantity
+msgid "Q-ty"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__rate
+msgid "Rate"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__result_after_clients_costs
+msgid "Result after client's costs"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__result_after_clients_costs_summ
+msgid "Result after client's costs Σ"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__invoice_user_id
+msgid "Salesperson"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_bio_marginality_report_search
+msgid "Status"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__tp_europe_price
+msgid "TP Europe"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__tp_europe_price_summ
+msgid "TP Europe Σ"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__tp_subsidiary_price
+msgid "TP subsidiary price"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__tp_subsidiary_price_summ
+msgid "TP subsidiary price Σ"
+msgstr ""
+
+#. module: bio_accounting
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_bio_marginality_report_search
+msgid "To Invoice"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__transportation_costs
+msgid "Transportation costs"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__transportation_costs_perc
+msgid "Transportation costs in %"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_bio_marginality_report__price_subtotal
+msgid "Untaxed Total"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields.selection,name:bio_accounting.selection__bio_marginality_report__move_type__in_invoice
+msgid "Vendor Bill"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields.selection,name:bio_accounting.selection__bio_marginality_report__move_type__in_refund
+msgid "Vendor Credit Note"
+msgstr ""
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_account_invoice_report__code_sku
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_account_invoice_report_search_inherit_bio
+msgid "code SKU"
+msgstr ""

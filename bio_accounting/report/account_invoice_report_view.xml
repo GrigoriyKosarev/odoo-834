@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--  -->
+    <record id="account_invoice_report_view_tree_inherit_bio" model="ir.ui.view">
+        <field name="name">account.invoice.report.view.tree.inherit.bio</field>
+        <field name="model">account.invoice.report</field>
+        <field name="inherit_id" ref="account.account_invoice_report_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name=&quot;invoice_date&quot;]" position="after">
+                <field name="date_of_receipt_by_buyer" optional="hide"/>
+            </xpath>
+            <!-- ODOO-476 begin-->
+            <xpath expr="//field[@name=&quot;product_id&quot;]" position="before">
+                <field name="bio_factoring" optional="show"/>
+            </xpath>
+            <!-- ODOO-476 end-->
+            <!-- ODOO-684 begin-->
+            <xpath expr="//field[@name=&quot;product_id&quot;]" position="before">
+                <field name="bio_general_code_id" optional="show"/>
+                <field name="bio_product_site_id" optional="show"/>
+                <field name="bio_production_code" optional="show"/>
+                <!-- ODOO-867 begin -->
+                <field name="detailed_type" optional="show"/>
+                <!-- ODOO-867 end -->
+            </xpath>
+            <!-- ODOO-684 end-->
+            <!-- ODOO-569 begin-->
+            <xpath expr="//field[@name=&quot;price_total&quot;]" position="after">
+                <field name="bio_untaxed_price_total" optional="show"/>
+            </xpath>
+            <!-- ODOO-569 end-->
+        </field>
+    </record>
+
+    <record id="view_account_invoice_report_search_inherit_bio" model="ir.ui.view">
+        <field name="name">account.invoice.report.search.inherit.bio</field>
+        <field name="model">account.invoice.report</field>
+        <field name="inherit_id" ref="account.view_account_invoice_report_search"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='invoice_date']" position="after">
+                <separator/>
+                <field name="date_of_receipt_by_buyer"/>
+            </xpath>
+
+            <xpath expr="//field[@name=&quot;product_id&quot;]" position="after">
+                <field name="product_barcode"/>
+            </xpath>
+            <xpath expr="//field[@name=&quot;product_id&quot;]" position="before">
+                <field name="code_sku" optional="show"/>
+                <!-- ODOO-684 begin -->
+                <field name="bio_general_code_id" optional="show"/>
+                <field name="bio_product_site_id" optional="show"/>
+                <field name="bio_production_code" optional="show"/>
+                <!-- ODOO-684 end -->
+                <!-- ODOO-867 begin -->
+                <field name="detailed_type" optional="show"/>
+                <!-- ODOO-867 end -->
+            </xpath>
+
+            <!--  ODOO-444
+            <xpath expr="//field[@name=&quot;product_id&quot;]" position="after">
+                <field name="bio_headquarter"/>
+            </xpath>         -->
+
+            <xpath expr="//filter[@name='filter_invoice_date']" position="after">
+                <filter name="filter_date_of_receipt_by_buyer" date="date_of_receipt_by_buyer"/>
+            </xpath>
+
+            <xpath expr="//filter[@name='duemonth']" position="before">
+                <filter string="Date receipt by buyer"
+                        name="date_of_receipt_by_buyer"
+                        context="{'group_by':'date_of_receipt_by_buyer'}"
+                        invisible="context.get('invoice_report_view_hide_invoice_date')"/>
+            </xpath>
+
+            <xpath expr="//filter[@name=&quot;company&quot;]" position="after">
+                <filter string="code SKU" name="code_sku" context="{'group_by':'code_sku'}"/>
+                <filter string="Barcode" name="product_barcode" context="{'group_by':'product_barcode'}"/>
+                <filter string="Headquarter" name="bio_headquarter" context="{'group_by':'bio_headquarter'}"/>      <!-- ODOO-444 -->
+                <filter string="Factoring" name="bio_factoring" context="{'group_by':'bio_factoring'}"/> <!-- ODOO-476 -->
+                <!-- ODOO-684 begin -->
+                <filter
+                    string="General code"
+                    name="groupby_bio_general_code_id"
+                    context="{'group_by' : 'bio_general_code_id'}"
+                />
+                <filter
+                    string="Production site"
+                    name="groupby_bio_product_site_id"
+                    context="{'group_by' : 'bio_product_site_id'}"
+                />
+                <filter
+                    string="Production code"
+                    name="groupby_bio_production_code"
+                    context="{'group_by' : 'bio_production_code'}"
+                />
+                <!-- ODOO-684 end -->
+                <!-- ODOO-867 begin -->
+                <filter
+                    string="Product Type"
+                    name="groupby_detailed_type"
+                    context="{'group_by' : 'detailed_type'}"
+                />
+                <!-- ODOO-867 end -->
+            </xpath>
+
+            <xpath expr="//search" position="inside">
+                <filter string="Product doesn't contain 'Opening balance'"
+                        name="filter_product_opening_balance"
+                        domain="[('product_id', 'not ilike', 'Opening balance')]"/>
+                <!-- ODOO-476 begin -->
+                <filter string="Is Factoring"
+                        name="filter_is_factoring"
+                        domain="[('bio_factoring', '=', True)]"/>
+                <filter string="Not Factoring"
+                        name="filter_not_factoring"
+                        domain="[('bio_factoring', '=', False)]"/>
+                <!-- ODOO-476 end -->
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

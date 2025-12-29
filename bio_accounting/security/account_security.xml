@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="group_prohibit_changing_invoices_after_approval" model="res.groups">
+            <field name="name">Prohibit changing invoices after approval</field>
+            <field name="category_id" ref="base.module_category_usability"/>
+        </record>
+        <record id="bio_group_available_reset_to_draft_account_move" model="res.groups">
+            <field name="name">Account move: Available "Reset to Draft"</field>
+            <field name="category_id" ref="base.module_category_usability"/>
+        </record>
+    </data>
+</odoo>

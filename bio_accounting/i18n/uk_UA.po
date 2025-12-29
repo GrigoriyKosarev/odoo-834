@@ -1,0 +1,63 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* bio_accounting
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e-20240331\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-09-24 08:39+0000\n"
+"PO-Revision-Date: 2024-09-24 08:39+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: bio_accounting
+#. odoo-python
+#: code:addons/bio_accounting/models/account_move.py:0
+#, python-format
+msgid "Attempting to return a different price than was shipped on the invoice!!!"
+msgstr "Спроба повернути іншу ціну, ніж була відправлена в рахунку!!!"
+
+#. module: bio_accounting
+#. odoo-python
+#: code:addons/bio_accounting/models/account_move.py:0
+#, python-format
+msgid "Attempting to return a larger quantity than was shipped on the invoice!!!"
+msgstr "Спроба повернути більшу кількість, ніж було відвантажено в накладній!!!"
+
+#. module: bio_accounting
+#. odoo-python
+#: code:addons/bio_accounting/models/account_move.py:0
+#, python-format
+msgid "Attempting to return an item that did not ship on invoice!!!"
+msgstr "Спроба повернути позицію яка не відвантажувалась по інвойсу!!!"
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_account_invoice_report__product_barcode
+#: model_terms:ir.ui.view,arch_db:bio_accounting.view_account_invoice_report_search_inherit_bio
+msgid "Barcode"
+msgstr "Штрихкод"
+
+#. module: bio_accounting
+#: model:ir.model,name:bio_accounting.model_account_invoice_report
+msgid "Invoices Statistics"
+msgstr "Статистика рахунків"
+
+#. module: bio_accounting
+#: model:ir.model,name:bio_accounting.model_account_move
+msgid "Journal Entry"
+msgstr "Запис у журналі"
+
+#. module: bio_accounting
+#: model:ir.model,name:bio_accounting.model_account_move_line
+msgid "Journal Item"
+msgstr "Запис у журналі"
+
+#. module: bio_accounting
+#: model:ir.model.fields,field_description:bio_accounting.field_account_move_line__price_unit_is_zero
+msgid "Price Unit Is Zero"
+msgstr "Одиниця Ціни Дорівнює Нулю"

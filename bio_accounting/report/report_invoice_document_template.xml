@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_invoice_document_inherit_bio" inherit_id="us_account_report_invoice.report_invoice_document">
+
+        <!--    ODOO-375    -->
+        <xpath expr="//t[@t-set=&quot;sales_data&quot;][@t-value=&quot;o._get_values_from_sale_order()&quot;]"
+               position="after">
+            <t t-set="partner_shipping" t-value="o._bio_get_partner_shipping_info(o)"/>
+        </xpath>
+        <!--    ODOO-375  end  -->
+
+        <!--    ODOO-566    -->
+<!--        <xpath expr="//t[@t-if=&quot;print_header_footer&quot;]/div/div/div/div/t[@t-if=&quot;o.company_id.id != 3&quot;]"-->
+<!--               position="replace">-->
+<!--            <t t-if="o.company_id.id !=4">-->
+<!--                <div class="col-5">-->
+<!--                    <span>CIF:</span>-->
+<!--                    &lt;!&ndash;# ODOO-596 start&ndash;&gt;-->
+<!--&lt;!&ndash;                    <span t-esc="company.vat"/>&ndash;&gt;-->
+<!--                    <t t-set="bio_vat_value" t-value="o.get_vat_to_display()"/>-->
+<!--                    <span t-esc="bio_vat_value"/>-->
+<!--                    &lt;!&ndash;# ODOO-596 end&ndash;&gt;-->
+<!--                    <t t-if="o.company_id.id == 1">-->
+<!--                        <div>-->
+<!--                            <span>No. Reg. Com. Brasov:</span>-->
+<!--                            <span t-esc="company.partner_id.nrc"/>-->
+<!--                        </div>-->
+<!--                    </t>-->
+<!--                </div>-->
+<!--            </t>-->
+
+<!--            <t t-if="o.company_id.id != 5 and o.company_id.id != 4 and o.company_id.id != 1">-->
+<!--                <div class="col-8">-->
+<!--                    <span>No. Reg. Com. Brasov:</span>-->
+<!--                    <span t-esc="company.partner_id.nrc"/>-->
+<!--                </div>-->
+<!--            </t>-->
+<!--        </xpath>-->
+<!--        <xpath expr="//t[@t-if=&quot;print_header_footer&quot;]/div/div/div/div/t[@t-if=&quot;o.company_id.id != 3&quot;]" position="replace">-->
+<!--            <t t-if="o.company_id.id !=4">-->
+<!--                <div class="col-8">-->
+<!--                    <t t-if="o.company_id.id == 1">-->
+<!--                        <div>-->
+<!--                            <span>Capital social subscris: 8.166.460 RON</span>-->
+<!--                        </div>-->
+<!--                    </t>-->
+<!--                </div>-->
+<!--            </t>-->
+<!--            <t t-if="o.company_id.id != 5 and o.company_id.id != 4 and o.company_id.id != 1">-->
+<!--                <div class="col-8">-->
+<!--                    <div>-->
+<!--                        <span>Capital social subscris: 8.166.460 RON</span>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </t>-->
+<!--            <t t-if="o.company_id.id != 3">-->
+<!--                <div class="col-5">-->
+<!--                    <t t-if="o.company_id.id == 4">-->
+<!--                        <span>IČ DPH:</span>-->
+<!--                        <span t-esc="company.vat"/>-->
+<!--                    </t>-->
+<!--                </div>-->
+<!--                <div class="col-4">-->
+<!--                    <t t-if="o.company_id.id == 4">-->
+<!--                        <span>IČO: </span>-->
+<!--                        <span t-esc="company.partner_id.company_registry"/>-->
+<!--                    </t>-->
+<!--                </div>-->
+<!--            </t>-->
+<!--        </xpath>-->
+        <!--    ODOO-566  end  -->
+
+        <xpath expr="//t[@t-if=&quot;o.company_id.id == 1&quot;]/t[@t-if=&quot;not sales_data[&apos;is_europe_country&apos;]&quot;]/div"
+               position="replace">
+            <div/>
+        </xpath>
+
+        <!--    ODOO-375    -->
+        <xpath expr="//t/div/div[@class=&quot;col-5 &quot;]/span[@t-esc=&quot;o.partner_shipping_id.vat&quot;]"
+               position="replace">
+            <span t-esc="partner_shipping.vat"/>
+        </xpath>
+        <xpath expr="//span[@t-esc=&quot;o.partner_shipping_id.parent_id.display_name&quot;]" position="replace">
+            <span t-esc="partner_shipping.parent_id.display_name"/>
+        </xpath>
+        <xpath expr="//span[@t-esc=&quot;o.partner_shipping_id.street&quot;]" position="replace">
+            <span t-esc="partner_shipping.street"/>
+        </xpath>
+        <xpath expr="//span[@t-esc=&quot;o.partner_shipping_id.zip&quot;]" position="replace">
+            <span t-esc="partner_shipping.zip">,</span>
+        </xpath>
+        <xpath expr="//span[@t-esc=&quot;o.partner_shipping_id.city&quot;]" position="replace">
+            <span t-esc="partner_shipping.city"/>
+        </xpath>
+        <xpath expr="//span[@t-esc=&quot;o.partner_shipping_id.country_id.display_name&quot;]" position="replace">
+            <span t-esc="partner_shipping.country_id.display_name"/>
+        </xpath>
+        <xpath expr="//t/t/div/div/span[@t-esc=&quot;o.partner_shipping_id.vat&quot;]" position="replace">
+            <span t-esc="partner_shipping.vat"/>
+        </xpath>
+        <xpath expr="//span[@class=&quot;col-5&quot;][@t-esc=&quot;o.partner_shipping_id.gln_code&quot;]"
+               position="replace">
+            <span class="col-5" t-esc="partner_shipping.gln_code"/>
+        </xpath>
+        <xpath expr="//span[@class=&quot;col-5&quot;][@t-esc=&quot;o.partner_shipping_id.ref&quot;]" position="replace">
+            <span class="col-5" t-esc="partner_shipping.ref"/>
+        </xpath>
+        <!--    ODOO-375  end  -->
+
+        <xpath expr="//t[@t-call=&quot;web.basic_layout&quot;]/div[last()]/div[last()]" position="after">
+            <t t-if="o.company_id.id == 1"> <!-- 'S.C. Alufix S.R.L.' -->
+                <br/>
+                <br/>
+                <t t-if="o.company_id.partner_id.country_id.id == o.partner_id.country_id.id">
+                    <table>
+                        <tr>
+                            <td class="text-start" style="border: hidden;">
+                                <span class="mb-2 col-2">Factura circula fara semnatura si stampila cf. art.V, alin (2)
+                                    din Ordonanta nr.17/2015 si art. 319 alin (29) din Legea nr. 227/2015 privind Codul
+                                    fiscal.
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                </t>
+                <t t-else="">
+                    <table>
+                        <tr>
+                            <td class="text-start" style="border: hidden;">
+                                <span class="mb-2 col-2">Intracommunity sales: VAT exempt intra-community operation
+                                    according to Council Directive 2006/112/EC of 28 November2006 on the common system
+                                    of value added tax.
+                                </span>
+                                <br/>
+                                <br/>
+                                <span class="mb-2 col-2">Export sales: VAT exempt according to art. 294 paragraph (1)-
+                                    a)-i) regarding the Fiscal Code.
+                                </span>
+                                <br/>
+                                <br/>
+                                <span class="mb-2 col-2">The invoice is available without signature and stamp ac. art.
+                                    V, paragraph (2) of Ordinance no. 17/2015 and art. 319paragraph(29) of Law no.
+                                    227/2015 regarding the Fiscal Code.
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                </t>
+            </t>
+        </xpath>
+
+        <!--    ODOO-442  begin  -->
+        <xpath expr="//span[@class=&quot;col-5&quot; and @t-esc=&quot;o.invoice_date&quot;]" position="replace">
+            <t t-if="o.date_of_receipt_by_buyer">
+                <span class="col-5" t-esc="o.date_of_receipt_by_buyer" t-options="{'widget': 'date'}"/>
+            </t>
+            <t t-else="">
+                <span class="col-5" t-esc="o.invoice_date" t-options="{'widget': 'date'}"/>
+            </t>
+        </xpath>
+
+        <xpath expr="//span[@class=&quot;col-5&quot; and @t-esc=&quot;picking_data[&apos;scheduled_date&apos;]&quot;]"
+               position="replace">
+            <t t-if="o.date_of_receipt_by_buyer">
+                <span class="col-5" t-esc="o.date_of_receipt_by_buyer" t-options="{'widget': 'date'}"/>
+            </t>
+            <t t-else="">
+                <span class="col-5" t-esc="picking_data['scheduled_date']" t-options="{'widget': 'date'}"/>
+            </t>
+        </xpath>
+
+        <xpath expr="//div[contains(@class, 'footer')]" position="before">
+            <div>
+                <br/>
+                <span t-esc="o._get_comment_for_factoring()"/>
+            </div>
+        </xpath>
+        <!--    ODOO-442  end  -->
+
+        <!-- ODOO-464 begin -->
+        <!--    ODOO-566   -->
+        <xpath expr="//div[contains(@class, 'footer')]" position="replace">
+
+            <div class="col-9 text-start text-muted  footer" style="font-size: 14px;">
+                <t t-if="print_header_footer">
+                    <t t-if="o.company_id.id == 3">
+                        <div>
+                            Reklamationen werden nur innerhalb von acht Tagen nach Empfang der Ware berücksichtigt. Die
+                            Ware bleibt bis zur vollständigen Bezahlung unser Eigentum.Gerichts- und Erfüllungsort Wien.
+                            Bei Zahlungsüberschreitung werden bankmäßige Verzugszinsen berechnet.
+                        </div>
+                    </t>
+                    <t t-if="o.company_id.id ==4">
+                        <span>OR Okres. súdu Bratislava I, oddiel Sro, vložka č.27928/B</span>
+                    </t>
+                    <br/>
+<!--                    <t t-set="partner_bank_id" t-value="o._get_invoice_partner_bank()"/>-->
+                    <t t-set="partner_bank_id" t-value="o.partner_bank_id"/>
+                    <t t-if="partner_bank_id">
+                        <ul style="list-style-type:none ">
+                            <t t-if="o.company_id.id !=4  and o.company_id.id != 3 and o.company_id.id != 1">
+                                <li>
+                                    <span>Közösségi adószám:</span>
+                                    <span t-esc="partner_bank_id.partner_id.nrc"/>
+                                    <t t-if="o.company_id.id !=5">
+                                      <span>| CUI:</span>
+                                    </t>
+<!--                                    <span>| CUI:</span>-->
+                                    <span t-esc="partner_bank_id.partner_id.vat"/>
+                                </li>
+                                <li>
+                                    <span>Bank:</span>
+                                    <span t-esc="partner_bank_id.bank_id.name"/>
+                                    <t t-if="o.company_id.id != 3">
+                                        <span t-esc="partner_bank_id.currency_id.name"/>
+                                    </t>
+                                    <span>, IBAN:</span>
+                                    <span t-esc="partner_bank_id.acc_number">, SWIFT:</span>
+                                    <span>, SWIFT:</span>
+                                    <span t-esc="partner_bank_id.bank_id.bic"/>
+                                </li>
+                            </t>
+                            <t t-if="o.company_id.id == 1">
+                                <li>
+                                    <span>Nr. Inregistrare Reg. Comertului:</span>
+                                    <span t-esc="partner_bank_id.partner_id.nrc"/>
+                                    <span>| CUI:</span>
+                                    <span t-esc="partner_bank_id.partner_id.vat"/>
+                                </li>
+                                <li>
+                                    <span>Banca:</span>
+                                    <span t-esc="partner_bank_id.bank_id.name"/>
+                                    <t t-if="o.company_id.id != 3">
+                                        <span t-esc="partner_bank_id.currency_id.name"/>
+                                    </t>
+                                    <span>, IBAN:</span>
+                                    <span t-esc="partner_bank_id.acc_number">, SWIFT:</span>
+                                    <span>, SWIFT:</span>
+                                    <span t-esc="partner_bank_id.bank_id.bic"/>
+                                </li>
+                            </t>
+                        </ul>
+                    </t>
+                </t>
+                <span>Page</span>
+                <span class="page"/>
+                /
+                <span class="topage"/>
+            </div>
+
+        </xpath>
+        <xpath expr="//div[contains(@class, 'footer')]" position="replace">
+
+            <div class="col-9 text-start text-muted  footer" style="font-size: 14px;">
+                <t t-if="print_header_footer">
+                    <t t-if="o.company_id.id == 3">
+                        <div>
+                            Reklamationen werden nur innerhalb von acht Tagen nach Empfang der Ware berücksichtigt. Die
+                            Ware bleibt bis zur vollständigen Bezahlung unser Eigentum.Gerichts- und Erfüllungsort Wien.
+                            Bei Zahlungsüberschreitung werden bankmäßige Verzugszinsen berechnet.
+                        </div>
+                    </t>
+                    <t t-if="o.company_id.id ==4">
+                        <span>OR Okres. súdu Bratislava I, oddiel Sro, vložka č.27928/B</span>
+                    </t>
+                    <br/>
+<!--                    <t t-set="partner_bank_id" t-value="o._get_invoice_partner_bank()"/>-->
+                    <t t-set="partner_bank_id" t-value="o.partner_bank_id"/>
+                    <t t-if="partner_bank_id">
+                        <ul style="list-style-type:none ">
+                            <t t-if="o.company_id.id !=4  and o.company_id.id != 3 and o.company_id.id != 1">
+                                <li>
+                                    <span>Közösségi adószám:</span>
+                                    <span t-esc="partner_bank_id.partner_id.nrc"/>
+                                    <t t-if="o.company_id.id !=5">
+                                      <span>| CUI:</span>
+                                    </t>
+                                    <!--<span>| CUI:</span>-->
+                                    <span t-esc="partner_bank_id.partner_id.vat"/>
+                                </li>
+                                <li>
+                                    <span>Bank:</span>
+                                    <span t-esc="partner_bank_id.bank_id.name"/>
+                                    <t t-if="o.company_id.id != 3">
+                                        <span t-esc="partner_bank_id.currency_id.name"/>
+                                    </t>
+                                    <span>, IBAN:</span>
+                                    <span t-esc="partner_bank_id.acc_number">, SWIFT:</span>
+                                    <span>, SWIFT:</span>
+                                    <span t-esc="partner_bank_id.bank_id.bic"/>
+                                </li>
+                            </t>
+                            <t t-if="o.company_id.id == 1">
+                                <li>
+                                    <span>Nr. Inregistrare Reg. Comertului:</span>
+                                    <span t-esc="partner_bank_id.partner_id.nrc"/>
+                                    <span>| CUI:</span>
+                                    <span t-esc="partner_bank_id.partner_id.vat"/>
+                                </li>
+                                <li>
+                                    <span>Banca:</span>
+                                    <span t-esc="partner_bank_id.bank_id.name"/>
+                                    <t t-if="o.company_id.id != 3">
+                                        <span t-esc="partner_bank_id.currency_id.name"/>
+                                    </t>
+                                    <span>, IBAN:</span>
+                                    <span t-esc="partner_bank_id.acc_number">, SWIFT:</span>
+                                    <span>, SWIFT:</span>
+                                    <span t-esc="partner_bank_id.bank_id.bic"/>
+                                </li>
+                            </t>
+                            <t t-if="o.company_id.id == 4 or o.company_id.id == 3">
+                                <li>
+                                    <span>Banca:</span>
+                                    <span t-esc="partner_bank_id.bank_id.name"/>
+                                    <t t-if="o.company_id.id != 3">
+                                        <span t-esc="partner_bank_id.currency_id.name"/>
+                                    </t>
+                                    <span>, IBAN:</span>
+                                    <span t-esc="partner_bank_id.acc_number">, SWIFT:</span>
+                                    <span>, SWIFT:</span>
+                                    <span t-esc="partner_bank_id.bank_id.bic"/>
+                                </li>
+                            </t>
+<!--                            <li>-->
+<!--                                <span>Banca:</span>-->
+<!--                                <span t-esc="partner_bank_id.bank_id.name"/>-->
+<!--                                <t t-if="o.company_id.id != 3">-->
+<!--                                    <span t-esc="partner_bank_id.currency_id.name"/>-->
+<!--                                </t>-->
+<!--                                <span>, IBAN:</span>-->
+<!--                                <span t-esc="partner_bank_id.acc_number">, SWIFT:</span>-->
+<!--                                <span>, SWIFT:</span>-->
+<!--                                <span t-esc="partner_bank_id.bank_id.bic"/>-->
+<!--                            </li>-->
+                        </ul>
+                    </t>
+                </t>
+                <span>Page</span>
+                <span class="page"/>
+                /
+                <span class="topage"/>
+            </div>
+
+        </xpath>
+        <!--    ODOO-566  end  -->
+        <!-- ODOO-464 end -->
+    </template>
+</odoo>

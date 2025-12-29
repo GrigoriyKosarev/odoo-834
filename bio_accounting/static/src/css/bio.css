@@ -1,0 +1,4 @@
+.bio_line_tree .o_data_row.text-info {                                         /* ODOO-472 */
+                                        background-color: #FFF9C2 !important; /* yellow */
+                                        color: #0035F5 !important;           /* blue */
+                                      }
