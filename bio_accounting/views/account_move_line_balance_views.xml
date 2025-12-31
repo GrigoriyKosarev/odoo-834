@@ -2,6 +2,14 @@
 <odoo>
 
     <!--https://apps.odoo.com/apps/modules/16.0/d_button_near_create_button-->
+    <!-- ODOO-834: Action визначається ПЕРЕД view щоб бути доступним -->
+    <record id="bio_action_server_reset_balances" model="ir.actions.server">
+        <field name="name">Reset and Update Balances</field>
+        <field name="model_id" ref="model_bio_account_move_line_balance"/>
+        <field name="state">code</field>
+        <field name="code">action = env['bio.account.move.line.balance'].reset_and_update_balances()</field>
+    </record>
+
     <record id="bio_account_move_line_balance_view_tree" model="ir.ui.view">
         <field name="name">bio.account.move.line.balance.tree</field>
         <field name="model">bio.account.move.line.balance</field>
@@ -17,13 +25,6 @@
                 <field name="bio_end_balance"/>
             </tree>
         </field>
-    </record>
-
-    <record id="bio_action_server_reset_balances" model="ir.actions.server">
-        <field name="name">Reset and Update Balances</field>
-        <field name="model_id" ref="model_bio_account_move_line_balance"/>
-        <field name="state">code</field>
-        <field name="code">action = env['bio.account.move.line.balance'].reset_and_update_balances()</field>
     </record>
 
     <record id="bio_account_move_line_balance_action" model="ir.actions.act_window">
