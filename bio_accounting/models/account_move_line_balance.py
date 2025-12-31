@@ -75,21 +75,41 @@ class AccountMoveLineBalance(models.Model):
 
     @api.model
     def reset_and_update_balances(self):
+        """
+        Повне перерахування балансів для всіх проводок.
+        1. Очищує таблицю bio_account_move_line_balance
+        2. Розраховує баланси через SQL window function
+        3. Синхронізує дані в основну таблицю account_move_line
+        ODOO-834
+        """
+        import logging
+        _logger = logging.getLogger(__name__)
+
         try:
+            # Крок 1: Очищення таблиці балансів
+            _logger.info("Truncating bio_account_move_line_balance table...")
             self.env.cr.execute("TRUNCATE TABLE bio_account_move_line_balance RESTART IDENTITY;")
             self.env.invalidate_all()
 
+            # Крок 2: Розрахунок балансів через window function
+            _logger.info("Calculating balances via SQL window function...")
             self.update_balances_sql()
             self.env.invalidate_all()
 
+            # Крок 3: Синхронізація в основну таблицю
+            _logger.info("Synchronizing balances to account_move_line table...")
             self.env.cr.execute("""
                UPDATE account_move_line aml
                SET bio_initial_balance = bal.bio_initial_balance,
-                   bio_end_balance     = bal.bio_end_balance 
+                   bio_end_balance     = bal.bio_end_balance
                FROM bio_account_move_line_balance bal
                WHERE bal.move_line_id = aml.id;
             """)
             self.env.invalidate_all()
-        except:
+
+            _logger.info("Balance reset and update completed successfully!")
+            return True
+
+        except Exception as e:
+            _logger.error("Failed to reset and update balances: %s", str(e), exc_info=True)
             return False
-        return True
