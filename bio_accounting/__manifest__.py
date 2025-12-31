@@ -36,6 +36,7 @@
             'bio_accounting/static/src/css/bio.css', # ODOO-472
         ],
     },
-    'post_init_hook': 'post_init_update_balances',
+    # ODOO-834: Тимчасово відключено для діагностики
+    # 'post_init_hook': 'post_init_update_balances',
     'auto_install': False,
 }
