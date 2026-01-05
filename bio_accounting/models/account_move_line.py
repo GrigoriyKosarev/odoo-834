@@ -26,16 +26,26 @@ class AccountMoveLine(models.Model):
         group_operator="max",  # При групуванні бере максимум = кінцевий баланс останнього рядка
     ) # ODOO-834
 
-    # Поле для pivot view - містить баланс тільки для останнього рядка в партиції
-    # Розраховується через SQL в _update_balances_incremental
-    bio_partition_closing = fields.Monetary(
-        string="Closing Balance (for Pivot)",
+    # Поля для pivot view - містять баланс тільки для останнього рядка в партиції
+    # Розраховуються через SQL в _update_balances_incremental
+    bio_closing_by_account_partner = fields.Monetary(
+        string="Balance by Account+Partner",
         currency_field="company_currency_id",
         store=True,
         readonly=True,
         help="Contains balance only for the last line in each account+partner partition. "
-             "Use this field in pivot view for correct aggregation when grouping. "
-             "Sum of this field gives total balance when grouping by partner or any other dimension."
+             "Use in pivot view when grouping by account and partner. "
+             "Sum of this field gives balance per account per partner."
+    ) # ODOO-834
+
+    bio_closing_by_partner = fields.Monetary(
+        string="Balance by Partner",
+        currency_field="company_currency_id",
+        store=True,
+        readonly=True,
+        help="Contains total partner balance (sum of all accounts) only for the very last line of the partner. "
+             "Use in pivot view when grouping only by partner. "
+             "Sum of this field gives total balance per partner."
     ) # ODOO-834
 
 
@@ -134,9 +144,9 @@ class AccountMoveLine(models.Model):
             """
         self.env.cr.execute(query, (tuple(lines_to_update.ids),))
 
-        # Розраховуємо bio_partition_closing для pivot view
-        # Тільки останній рядок в кожній партиції отримує значення bio_end_balance
-        partition_query = """
+        # Розраховуємо bio_closing_by_account_partner для pivot view
+        # Тільки останній рядок в кожній партиції (account+partner) отримує bio_end_balance
+        account_partner_query = """
             WITH ranked AS (
                 SELECT
                     id,
@@ -149,14 +159,61 @@ class AccountMoveLine(models.Model):
                 WHERE parent_state='posted' AND id IN %s
             )
             UPDATE account_move_line aml
-            SET bio_partition_closing = CASE
+            SET bio_closing_by_account_partner = CASE
                 WHEN ranked.rn = 1 THEN ranked.bio_end_balance
                 ELSE 0
             END
             FROM ranked
             WHERE ranked.id = aml.id;
         """
-        self.env.cr.execute(partition_query, (tuple(lines_to_update.ids),))
+        self.env.cr.execute(account_partner_query, (tuple(lines_to_update.ids),))
+
+        # Розраховуємо bio_closing_by_partner для pivot view
+        # Тільки самий останній рядок партнера отримує загальний баланс всіх accounts
+        partner_query = """
+            WITH last_lines_per_account AS (
+                -- Знаходимо останній рядок для кожного account+partner
+                SELECT DISTINCT ON (account_id, COALESCE(partner_id,0))
+                    id,
+                    partner_id,
+                    bio_end_balance,
+                    date
+                FROM account_move_line
+                WHERE parent_state='posted'
+                ORDER BY account_id, COALESCE(partner_id,0), date DESC, id DESC
+            ),
+            partner_totals AS (
+                -- Сумуємо баланси по партнерам
+                SELECT
+                    COALESCE(partner_id,0) as partner_key,
+                    SUM(bio_end_balance) as total_balance
+                FROM last_lines_per_account
+                GROUP BY COALESCE(partner_id,0)
+            ),
+            last_line_per_partner AS (
+                -- Знаходимо самий останній рядок для кожного партнера
+                SELECT DISTINCT ON (COALESCE(partner_id,0))
+                    id,
+                    COALESCE(partner_id,0) as partner_key
+                FROM account_move_line
+                WHERE parent_state='posted' AND id IN %s
+                ORDER BY COALESCE(partner_id,0), date DESC, id DESC
+            )
+            UPDATE account_move_line aml
+            SET bio_closing_by_partner = COALESCE(pt.total_balance, 0)
+            FROM last_line_per_partner llpp
+            LEFT JOIN partner_totals pt ON pt.partner_key = llpp.partner_key
+            WHERE aml.id = llpp.id;
+        """
+        self.env.cr.execute(partner_query, (tuple(lines_to_update.ids),))
+
+        # Обнулюємо bio_closing_by_partner для всіх інших рядків
+        self.env.cr.execute("""
+            UPDATE account_move_line
+            SET bio_closing_by_partner = 0
+            WHERE id IN %s
+              AND bio_closing_by_partner IS NULL;
+        """, (tuple(lines_to_update.ids),))
 
     @api.depends('price_unit', 'tax_ids', 'currency_id', 'company_id')
     def _compute_price_unit_is_zero(self):  # ODOO-231  # ODOO-472

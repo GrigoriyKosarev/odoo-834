@@ -23,7 +23,8 @@
             <xpath expr="//pivot" position="inside">
                 <field name="bio_initial_balance" type="measure"/>
                 <field name="bio_end_balance" type="measure"/>
-                <field name="bio_partition_closing" type="measure" string="Balance (Aggregated)"/>
+                <field name="bio_closing_by_account_partner" type="measure" string="Balance (by Account)"/>
+                <field name="bio_closing_by_partner" type="measure" string="Balance (by Partner)"/>
             </xpath>
         </field>
     </record>
