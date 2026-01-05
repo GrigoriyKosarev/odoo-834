@@ -22,14 +22,12 @@ class AccountMoveLineBalance(models.Model):
         currency_field='company_currency_id',
         readonly=True,
         store=True,
-        group_operator='min',  # При групуванні бере мінімум
     )
     bio_end_balance = fields.Monetary(
         string='End Balance',
         currency_field='company_currency_id',
         readonly=True,
         store=True,
-        group_operator='max',  # При групуванні бере максимум
     )
 
     _sql_constraints = [

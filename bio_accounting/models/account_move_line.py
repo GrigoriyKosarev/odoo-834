@@ -16,14 +16,12 @@ class AccountMoveLine(models.Model):
         currency_field="company_currency_id",
         store=True,
         compute="_compute_bio_balances",
-        group_operator="min",  # При групуванні бере мінімум = початковий баланс першого рядка
     ) # ODOO-834
     bio_end_balance = fields.Monetary(
         string="End Balance",
         currency_field="company_currency_id",
         store=True,
         compute="_compute_bio_balances",
-        group_operator="max",  # При групуванні бере максимум = кінцевий баланс останнього рядка
     ) # ODOO-834
 
     # Поля для pivot view - містять баланс тільки для останнього рядка в партиції
