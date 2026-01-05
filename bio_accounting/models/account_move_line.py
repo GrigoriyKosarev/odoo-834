@@ -28,24 +28,47 @@ class AccountMoveLine(models.Model):
 
     # Поля для pivot view - містять баланс тільки для останнього рядка в партиції
     # Розраховуються через SQL в _update_balances_incremental
-    bio_closing_by_account_partner = fields.Monetary(
-        string="Balance by Account+Partner",
+
+    # Opening balance fields (для фільтрації по даті)
+    bio_opening_by_account_partner = fields.Monetary(
+        string="Opening by Account+Partner",
         currency_field="company_currency_id",
         store=True,
         readonly=True,
-        help="Contains balance only for the last line in each account+partner partition. "
+        help="Contains opening balance only for the FIRST line in each account+partner partition. "
+             "Use in pivot view when grouping by account and partner with date filter. "
+             "Sum of this field gives opening balance per account per partner."
+    ) # ODOO-834
+
+    bio_opening_by_partner = fields.Monetary(
+        string="Opening by Partner",
+        currency_field="company_currency_id",
+        store=True,
+        readonly=True,
+        help="Contains total partner opening balance (sum of all accounts) only for the very first line of the partner. "
+             "Use in pivot view when grouping only by partner with date filter. "
+             "Sum of this field gives total opening balance per partner."
+    ) # ODOO-834
+
+    # Closing balance fields
+    bio_closing_by_account_partner = fields.Monetary(
+        string="Closing by Account+Partner",
+        currency_field="company_currency_id",
+        store=True,
+        readonly=True,
+        help="Contains closing balance only for the LAST line in each account+partner partition. "
              "Use in pivot view when grouping by account and partner. "
-             "Sum of this field gives balance per account per partner."
+             "Sum of this field gives closing balance per account per partner."
     ) # ODOO-834
 
     bio_closing_by_partner = fields.Monetary(
-        string="Balance by Partner",
+        string="Closing by Partner",
         currency_field="company_currency_id",
         store=True,
         readonly=True,
-        help="Contains total partner balance (sum of all accounts) only for the very last line of the partner. "
+        help="Contains total partner closing balance (sum of all accounts) only for the very last line of the partner. "
              "Use in pivot view when grouping only by partner. "
-             "Sum of this field gives total balance per partner."
+             "Sum of this field gives total closing balance per partner."
     ) # ODOO-834
 
 
@@ -213,6 +236,77 @@ class AccountMoveLine(models.Model):
             SET bio_closing_by_partner = 0
             WHERE id IN %s
               AND bio_closing_by_partner IS NULL;
+        """, (tuple(lines_to_update.ids),))
+
+        # Розраховуємо bio_opening_by_account_partner для pivot view з фільтром по даті
+        # Тільки перший рядок в кожній партиції (account+partner) отримує bio_initial_balance
+        opening_account_partner_query = """
+            WITH ranked AS (
+                SELECT
+                    id,
+                    bio_initial_balance,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY account_id, COALESCE(partner_id,0)
+                        ORDER BY date ASC, id ASC
+                    ) AS rn
+                FROM account_move_line
+                WHERE parent_state='posted' AND id IN %s
+            )
+            UPDATE account_move_line aml
+            SET bio_opening_by_account_partner = CASE
+                WHEN ranked.rn = 1 THEN ranked.bio_initial_balance
+                ELSE 0
+            END
+            FROM ranked
+            WHERE ranked.id = aml.id;
+        """
+        self.env.cr.execute(opening_account_partner_query, (tuple(lines_to_update.ids),))
+
+        # Розраховуємо bio_opening_by_partner для pivot view
+        # Тільки самий перший рядок партнера отримує загальний початковий баланс всіх accounts
+        opening_partner_query = """
+            WITH first_lines_per_account AS (
+                -- Знаходимо перший рядок для кожного account+partner
+                SELECT DISTINCT ON (account_id, COALESCE(partner_id,0))
+                    id,
+                    partner_id,
+                    bio_initial_balance,
+                    date
+                FROM account_move_line
+                WHERE parent_state='posted'
+                ORDER BY account_id, COALESCE(partner_id,0), date ASC, id ASC
+            ),
+            partner_opening_totals AS (
+                -- Сумуємо початкові баланси по партнерам
+                SELECT
+                    COALESCE(partner_id,0) as partner_key,
+                    SUM(bio_initial_balance) as total_opening_balance
+                FROM first_lines_per_account
+                GROUP BY COALESCE(partner_id,0)
+            ),
+            first_line_per_partner AS (
+                -- Знаходимо самий перший рядок для кожного партнера
+                SELECT DISTINCT ON (COALESCE(partner_id,0))
+                    id,
+                    COALESCE(partner_id,0) as partner_key
+                FROM account_move_line
+                WHERE parent_state='posted' AND id IN %s
+                ORDER BY COALESCE(partner_id,0), date ASC, id ASC
+            )
+            UPDATE account_move_line aml
+            SET bio_opening_by_partner = COALESCE(pot.total_opening_balance, 0)
+            FROM first_line_per_partner flpp
+            LEFT JOIN partner_opening_totals pot ON pot.partner_key = flpp.partner_key
+            WHERE aml.id = flpp.id;
+        """
+        self.env.cr.execute(opening_partner_query, (tuple(lines_to_update.ids),))
+
+        # Обнулюємо bio_opening_by_partner для всіх інших рядків
+        self.env.cr.execute("""
+            UPDATE account_move_line
+            SET bio_opening_by_partner = 0
+            WHERE id IN %s
+              AND bio_opening_by_partner IS NULL;
         """, (tuple(lines_to_update.ids),))
 
     @api.depends('price_unit', 'tax_ids', 'currency_id', 'company_id')
