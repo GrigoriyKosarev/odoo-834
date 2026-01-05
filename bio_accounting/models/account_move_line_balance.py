@@ -109,6 +109,30 @@ class AccountMoveLineBalance(models.Model):
             """)
             self.env.invalidate_all()
 
+            # Крок 4: Розрахунок bio_partition_closing для pivot view
+            _logger.info("Calculating bio_partition_closing for pivot view...")
+            self.env.cr.execute("""
+                WITH ranked AS (
+                    SELECT
+                        id,
+                        bio_end_balance,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY account_id, COALESCE(partner_id,0)
+                            ORDER BY date DESC, id DESC
+                        ) AS rn
+                    FROM account_move_line
+                    WHERE parent_state='posted'
+                )
+                UPDATE account_move_line aml
+                SET bio_partition_closing = CASE
+                    WHEN ranked.rn = 1 THEN ranked.bio_end_balance
+                    ELSE 0
+                END
+                FROM ranked
+                WHERE ranked.id = aml.id;
+            """)
+            self.env.invalidate_all()
+
             _logger.info("Balance reset and update completed successfully!")
             return True
 

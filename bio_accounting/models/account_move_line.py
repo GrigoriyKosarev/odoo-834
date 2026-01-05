@@ -26,17 +26,22 @@ class AccountMoveLine(models.Model):
         group_operator="max",  # При групуванні бере максимум = кінцевий баланс останнього рядка
     ) # ODOO-834
 
+    # Поле для pivot view - містить баланс тільки для останнього рядка в партиції
+    # Розраховується через SQL в _update_balances_incremental
+    bio_partition_closing = fields.Monetary(
+        string="Closing Balance (for Pivot)",
+        currency_field="company_currency_id",
+        store=True,
+        readonly=True,
+        help="Contains balance only for the last line in each account+partner partition. "
+             "Use this field in pivot view for correct aggregation when grouping. "
+             "Sum of this field gives total balance when grouping by partner or any other dimension."
+    ) # ODOO-834
+
 
     @api.depends('debit', 'credit', 'date', 'account_id', 'partner_id', 'parent_state')
     def _compute_bio_balances(self):
         ''' ODOO-834 '''
-
-        # if (self.env.context.get('skip_bio_compute') or
-        #     self.env.context.get('install_mode') or
-        #     self.env.context.get('module')
-        # ):
-        #     return
-
         Balance = self.env['bio.account.move.line.balance']
         for line in self:
             bal = Balance.search([('move_line_id', '=', line.id)], limit=1)
@@ -128,6 +133,30 @@ class AccountMoveLine(models.Model):
                 company_currency_id = EXCLUDED.company_currency_id;
             """
         self.env.cr.execute(query, (tuple(lines_to_update.ids),))
+
+        # Розраховуємо bio_partition_closing для pivot view
+        # Тільки останній рядок в кожній партиції отримує значення bio_end_balance
+        partition_query = """
+            WITH ranked AS (
+                SELECT
+                    id,
+                    bio_end_balance,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY account_id, COALESCE(partner_id,0)
+                        ORDER BY date DESC, id DESC
+                    ) AS rn
+                FROM account_move_line
+                WHERE parent_state='posted' AND id IN %s
+            )
+            UPDATE account_move_line aml
+            SET bio_partition_closing = CASE
+                WHEN ranked.rn = 1 THEN ranked.bio_end_balance
+                ELSE 0
+            END
+            FROM ranked
+            WHERE ranked.id = aml.id;
+        """
+        self.env.cr.execute(partition_query, (tuple(lines_to_update.ids),))
 
     @api.depends('price_unit', 'tax_ids', 'currency_id', 'company_id')
     def _compute_price_unit_is_zero(self):  # ODOO-231  # ODOO-472
