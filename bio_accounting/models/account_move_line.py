@@ -25,37 +25,24 @@ class AccountMoveLine(models.Model):
     ) # ODOO-834
 
     # Поля для динамічного розрахунку в pivot view через read_group override
-    # НЕ зберігаються в БД, розраховуються на льоту на основі фільтрів
-    bio_opening_by_account_partner = fields.Monetary(
-        string="Opening (by Account+Partner)",
-        currency_field="company_currency_id",
-        readonly=True,
-        help="Dynamic opening balance for account+partner grouping based on pivot filters. "
-             "Calculated in read_group() method."
-    ) # ODOO-834
-
+    # Використовуються тільки коли групування БЕЗ account_id (групування тільки по partner)
+    # При групуванні з account_id використовуються стандартні bio_initial_balance і bio_end_balance
     bio_opening_by_partner = fields.Monetary(
-        string="Opening (by Partner)",
+        string="Opening Balance",
         currency_field="company_currency_id",
         readonly=True,
-        help="Dynamic opening balance for partner-only grouping based on pivot filters. "
-             "Calculated in read_group() method."
-    ) # ODOO-834
-
-    bio_closing_by_account_partner = fields.Monetary(
-        string="Closing (by Account+Partner)",
-        currency_field="company_currency_id",
-        readonly=True,
-        help="Dynamic closing balance for account+partner grouping based on pivot filters. "
-             "Calculated in read_group() method."
+        help="Dynamic opening balance for partner-only grouping (without account_id) based on pivot filters. "
+             "Calculated in read_group() method. "
+             "When grouping includes account_id, use bio_initial_balance instead."
     ) # ODOO-834
 
     bio_closing_by_partner = fields.Monetary(
-        string="Closing (by Partner)",
+        string="Closing Balance",
         currency_field="company_currency_id",
         readonly=True,
-        help="Dynamic closing balance for partner-only grouping based on pivot filters. "
-             "Calculated in read_group() method."
+        help="Dynamic closing balance for partner-only grouping (without account_id) based on pivot filters. "
+             "Calculated in read_group() method. "
+             "When grouping includes account_id, use bio_end_balance instead."
     ) # ODOO-834
 
     @api.depends('debit', 'credit', 'date', 'account_id', 'partner_id', 'parent_state')
@@ -74,16 +61,14 @@ class AccountMoveLine(models.Model):
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         """
-        Override read_group для динамічного розрахунку opening/closing полів
-        на основі domain (фільтрів) в pivot view.
+        Override read_group для динамічного розрахунку opening/closing полів по partner
+        коли групування БЕЗ account_id.
+
+        Коли групування включає account_id - використовуються bio_initial_balance і bio_end_balance.
+        Коли групування БЕЗ account_id (тільки partner) - розраховуються bio_opening/closing_by_partner.
         """
         # Список полів які треба розрахувати динамічно
-        dynamic_fields = [
-            'bio_opening_by_account_partner',
-            'bio_opening_by_partner',
-            'bio_closing_by_account_partner',
-            'bio_closing_by_partner'
-        ]
+        dynamic_fields = ['bio_opening_by_partner', 'bio_closing_by_partner']
 
         # Перевіряємо чи запитують хоча б одне динамічне поле
         requested_dynamic_fields = [f for f in fields if any(df in f for df in dynamic_fields)]
@@ -92,11 +77,19 @@ class AccountMoveLine(models.Model):
             # Якщо не запитують динамічні поля - викликаємо стандартний read_group
             return super().read_group(domain, fields, groupby, offset, limit, orderby, lazy)
 
+        # Перевіряємо чи є account_id в групуванні
+        has_account_in_groupby = any('account_id' in g for g in (groupby or []))
+
+        if has_account_in_groupby:
+            # Якщо групування включає account_id - не розраховуємо динамічні поля
+            # Користувач буде використовувати bio_initial_balance і bio_end_balance
+            return super().read_group(domain, fields, groupby, offset, limit, orderby, lazy)
+
         # Викликаємо стандартний read_group для всіх інших полів
         other_fields = [f for f in fields if not any(df in f for df in dynamic_fields)]
         result = super().read_group(domain, other_fields, groupby, offset, limit, orderby, lazy)
 
-        # Для кожної групи розраховуємо динамічні поля
+        # Для кожної групи розраховуємо динамічні поля (тільки якщо БЕЗ account_id)
         for group in result:
             # Створюємо domain для цієї конкретної групи
             group_domain = domain.copy() if domain else []
@@ -109,47 +102,12 @@ class AccountMoveLine(models.Model):
             for field_spec in requested_dynamic_fields:
                 field_name = field_spec.split(':')[0]  # Видаляємо агрегацію якщо є
 
-                if field_name == 'bio_opening_by_account_partner':
-                    group[field_name] = self._calc_opening_by_account_partner(group_domain)
-                elif field_name == 'bio_opening_by_partner':
+                if field_name == 'bio_opening_by_partner':
                     group[field_name] = self._calc_opening_by_partner(group_domain)
-                elif field_name == 'bio_closing_by_account_partner':
-                    group[field_name] = self._calc_closing_by_account_partner(group_domain)
                 elif field_name == 'bio_closing_by_partner':
                     group[field_name] = self._calc_closing_by_partner(group_domain)
 
         return result
-
-    def _calc_opening_by_account_partner(self, domain):
-        """
-        Розрахунок opening balance для групування по account+partner
-        в межах заданого domain (фільтрів).
-        """
-        # Знаходимо перші рядки для кожного account+partner в межах domain
-        query = """
-            WITH filtered_lines AS (
-                SELECT id, account_id, partner_id, bio_initial_balance, date
-                FROM account_move_line
-                WHERE parent_state='posted' AND id IN %s
-            ),
-            first_lines AS (
-                SELECT DISTINCT ON (account_id, COALESCE(partner_id,0))
-                    bio_initial_balance
-                FROM filtered_lines
-                ORDER BY account_id, COALESCE(partner_id,0), date ASC, id ASC
-            )
-            SELECT COALESCE(SUM(bio_initial_balance), 0) as total
-            FROM first_lines;
-        """
-
-        # Знаходимо всі ID що відповідають domain
-        lines = self.search(domain)
-        if not lines:
-            return 0.0
-
-        self.env.cr.execute(query, (tuple(lines.ids),))
-        result = self.env.cr.fetchone()
-        return result[0] if result else 0.0
 
     def _calc_opening_by_partner(self, domain):
         """
@@ -172,36 +130,6 @@ class AccountMoveLine(models.Model):
             )
             SELECT COALESCE(SUM(bio_initial_balance), 0) as total
             FROM first_lines_per_account;
-        """
-
-        lines = self.search(domain)
-        if not lines:
-            return 0.0
-
-        self.env.cr.execute(query, (tuple(lines.ids),))
-        result = self.env.cr.fetchone()
-        return result[0] if result else 0.0
-
-    def _calc_closing_by_account_partner(self, domain):
-        """
-        Розрахунок closing balance для групування по account+partner
-        в межах заданого domain (фільтрів).
-        """
-        # Знаходимо останні рядки для кожного account+partner в межах domain
-        query = """
-            WITH filtered_lines AS (
-                SELECT id, account_id, partner_id, bio_end_balance, date
-                FROM account_move_line
-                WHERE parent_state='posted' AND id IN %s
-            ),
-            last_lines AS (
-                SELECT DISTINCT ON (account_id, COALESCE(partner_id,0))
-                    bio_end_balance
-                FROM filtered_lines
-                ORDER BY account_id, COALESCE(partner_id,0), date DESC, id DESC
-            )
-            SELECT COALESCE(SUM(bio_end_balance), 0) as total
-            FROM last_lines;
         """
 
         lines = self.search(domain)

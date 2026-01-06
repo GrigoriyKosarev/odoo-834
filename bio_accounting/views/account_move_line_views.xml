@@ -21,12 +21,10 @@
         <field name="inherit_id" ref="account.view_move_line_pivot"/>
         <field name="arch" type="xml">
             <xpath expr="//pivot" position="inside">
-                <field name="bio_initial_balance" type="measure"/>
-                <field name="bio_end_balance" type="measure"/>
-                <field name="bio_opening_by_account_partner" type="measure" string="Opening (by Account)"/>
-                <field name="bio_opening_by_partner" type="measure" string="Opening (by Partner)"/>
-                <field name="bio_closing_by_account_partner" type="measure" string="Closing (by Account)"/>
-                <field name="bio_closing_by_partner" type="measure" string="Closing (by Partner)"/>
+                <field name="bio_initial_balance" type="measure" string="Initial Balance"/>
+                <field name="bio_end_balance" type="measure" string="End Balance"/>
+                <field name="bio_opening_by_partner" type="measure" string="Opening Balance"/>
+                <field name="bio_closing_by_partner" type="measure" string="Closing Balance"/>
             </xpath>
         </field>
     </record>
