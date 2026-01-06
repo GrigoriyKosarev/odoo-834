@@ -102,19 +102,32 @@ class AccountMoveLine(models.Model):
 
     def _calc_opening_by_partner(self, domain):
         """
-        Розрахунок opening balance для групування тільки по partner
-        в межах заданого domain (фільтрів).
+        Розрахунок opening balance для групування по partner
+        з урахуванням фільтрів (особливо по даті).
+        Оптимізований - використовує прямий SQL без search().
         """
-        # Для кожного partner сумуємо opening balance всіх його accounts
-        query = """
+        # Конвертуємо Odoo domain в SQL WHERE clause
+        query_obj = self._where_calc(domain)
+        from_clause, where_clause, where_params = query_obj.get_sql()
+
+        # Якщо немає WHERE умов - значить немає фільтрів, повертаємо 0
+        if not where_clause:
+            where_clause = "1=1"
+
+        # SQL запит який знаходить перші рядки по кожному account+partner і сумує їх opening balance
+        query = f"""
             WITH filtered_lines AS (
-                SELECT id, account_id, partner_id, bio_initial_balance, date
-                FROM account_move_line
-                WHERE parent_state='posted' AND id IN %s
+                SELECT
+                    account_id,
+                    partner_id,
+                    bio_initial_balance,
+                    date,
+                    id
+                FROM {from_clause}
+                WHERE parent_state='posted' AND ({where_clause})
             ),
             first_lines_per_account AS (
                 SELECT DISTINCT ON (account_id, COALESCE(partner_id,0))
-                    partner_id,
                     bio_initial_balance
                 FROM filtered_lines
                 ORDER BY account_id, COALESCE(partner_id,0), date ASC, id ASC
@@ -123,29 +136,38 @@ class AccountMoveLine(models.Model):
             FROM first_lines_per_account;
         """
 
-        lines = self.search(domain)
-        if not lines:
-            return 0.0
-
-        self.env.cr.execute(query, (tuple(lines.ids),))
+        self.env.cr.execute(query, where_params)
         result = self.env.cr.fetchone()
         return result[0] if result else 0.0
 
     def _calc_closing_by_partner(self, domain):
         """
-        Розрахунок closing balance для групування тільки по partner
-        в межах заданого domain (фільтрів).
+        Розрахунок closing balance для групування по partner
+        з урахуванням фільтрів (особливо по даті).
+        Оптимізований - використовує прямий SQL без search().
         """
-        # Для кожного partner сумуємо closing balance всіх його accounts
-        query = """
+        # Конвертуємо Odoo domain в SQL WHERE clause
+        query_obj = self._where_calc(domain)
+        from_clause, where_clause, where_params = query_obj.get_sql()
+
+        # Якщо немає WHERE умов - значить немає фільтрів, повертаємо 0
+        if not where_clause:
+            where_clause = "1=1"
+
+        # SQL запит який знаходить останні рядки по кожному account+partner і сумує їх closing balance
+        query = f"""
             WITH filtered_lines AS (
-                SELECT id, account_id, partner_id, bio_end_balance, date
-                FROM account_move_line
-                WHERE parent_state='posted' AND id IN %s
+                SELECT
+                    account_id,
+                    partner_id,
+                    bio_end_balance,
+                    date,
+                    id
+                FROM {from_clause}
+                WHERE parent_state='posted' AND ({where_clause})
             ),
             last_lines_per_account AS (
                 SELECT DISTINCT ON (account_id, COALESCE(partner_id,0))
-                    partner_id,
                     bio_end_balance
                 FROM filtered_lines
                 ORDER BY account_id, COALESCE(partner_id,0), date DESC, id DESC
@@ -154,11 +176,7 @@ class AccountMoveLine(models.Model):
             FROM last_lines_per_account;
         """
 
-        lines = self.search(domain)
-        if not lines:
-            return 0.0
-
-        self.env.cr.execute(query, (tuple(lines.ids),))
+        self.env.cr.execute(query, where_params)
         result = self.env.cr.fetchone()
         return result[0] if result else 0.0
 
