@@ -61,11 +61,10 @@ class AccountMoveLine(models.Model):
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         """
-        Override read_group для динамічного розрахунку opening/closing полів по partner
-        коли групування БЕЗ account_id.
+        Override read_group для динамічного розрахунку opening/closing полів.
 
-        Коли групування включає account_id - використовуються bio_initial_balance і bio_end_balance.
-        Коли групування БЕЗ account_id (тільки partner) - розраховуються bio_opening/closing_by_partner.
+        Поля bio_opening_by_partner і bio_closing_by_partner розраховуються динамічно
+        на основі domain (фільтрів) в pivot view для будь-якого групування.
         """
         # Список полів які треба розрахувати динамічно
         dynamic_fields = ['bio_opening_by_partner', 'bio_closing_by_partner']
@@ -77,19 +76,11 @@ class AccountMoveLine(models.Model):
             # Якщо не запитують динамічні поля - викликаємо стандартний read_group
             return super().read_group(domain, fields, groupby, offset, limit, orderby, lazy)
 
-        # Перевіряємо чи є account_id в групуванні
-        has_account_in_groupby = any('account_id' in g for g in (groupby or []))
-
-        if has_account_in_groupby:
-            # Якщо групування включає account_id - не розраховуємо динамічні поля
-            # Користувач буде використовувати bio_initial_balance і bio_end_balance
-            return super().read_group(domain, fields, groupby, offset, limit, orderby, lazy)
-
         # Викликаємо стандартний read_group для всіх інших полів
         other_fields = [f for f in fields if not any(df in f for df in dynamic_fields)]
         result = super().read_group(domain, other_fields, groupby, offset, limit, orderby, lazy)
 
-        # Для кожної групи розраховуємо динамічні поля (тільки якщо БЕЗ account_id)
+        # Для кожної групи розраховуємо динамічні поля
         for group in result:
             # Створюємо domain для цієї конкретної групи
             group_domain = domain.copy() if domain else []
