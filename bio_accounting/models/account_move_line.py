@@ -103,7 +103,7 @@ class AccountMoveLine(models.Model):
 
             # Додаємо умови групування до domain
             if groupby and '__domain' in group:
-                group_domain = list(set(group_domain + group['__domain']))
+                group_domain = group_domain + group['__domain']
 
             # Розраховуємо кожне запитане динамічне поле
             for field_spec in requested_dynamic_fields:
