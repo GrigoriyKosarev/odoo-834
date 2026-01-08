@@ -6,22 +6,23 @@ class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     # Stored balance fields (зберігаються в БД)
+    # Заповнюються через SQL в _update_balances_incremental() або reset_and_update_balances()
     bio_initial_balance = fields.Monetary(
         string="Initial Balance",
         currency_field="company_currency_id",
-        store=True,
-        compute="_compute_bio_balances",
+        readonly=True,
         help="Balance BEFORE the current line (excluding current transaction). "
-             "Calculated using SQL window functions with PARTITION BY account+partner."
+             "Calculated using SQL window functions with PARTITION BY account+partner. "
+             "Updated automatically via _update_balances_incremental() or manually via 'Reset and Update Balances'."
     )  # ODOO-834
 
     bio_end_balance = fields.Monetary(
         string="End Balance",
         currency_field="company_currency_id",
-        store=True,
-        compute="_compute_bio_balances",
+        readonly=True,
         help="Balance AFTER the current line (including current transaction). "
-             "Calculated using SQL window functions with PARTITION BY account+partner."
+             "Calculated using SQL window functions with PARTITION BY account+partner. "
+             "Updated automatically via _update_balances_incremental() or manually via 'Reset and Update Balances'."
     )  # ODOO-834
 
     # Dynamic balance fields (НЕ зберігаються, розраховуються в read_group)
@@ -45,23 +46,6 @@ class AccountMoveLine(models.Model):
              "Shows balance at the END of the filtered period. "
              "Formula: bio_opening_by_partner + sum(balance) = bio_closing_by_partner"
     )  # ODOO-834
-
-    @api.depends('debit', 'credit', 'date', 'account_id', 'partner_id', 'parent_state')
-    def _compute_bio_balances(self):
-        """
-        Compute method для отримання балансів з таблиці bio.account.move.line.balance.
-        Реальні розрахунки виконуються в SQL через _update_balances_incremental().
-        ODOO-834
-        """
-        Balance = self.env['bio.account.move.line.balance']
-        for line in self:
-            bal = Balance.search([('move_line_id', '=', line.id)], limit=1)
-            if bal:
-                line.bio_initial_balance = bal.bio_initial_balance
-                line.bio_end_balance = bal.bio_end_balance
-            else:
-                line.bio_initial_balance = 0
-                line.bio_end_balance = 0
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
@@ -213,10 +197,8 @@ class AccountMoveLine(models.Model):
         ODOO-834
         """
         lines = super().create(vals_list)
-        # Skip balance update during module installation or import
-        # install_mode - наш кастомний прапорець для ручного контролю
-        # check_move_validity=False - Odoo встановлює під час імпорту даних
-        if not self.env.context.get('install_mode') and self.env.context.get('check_move_validity', True):
+        # Skip balance update during module installation
+        if not self.env.context.get('install_mode'):
             lines._update_balances_incremental()
         return lines
 
@@ -227,8 +209,8 @@ class AccountMoveLine(models.Model):
         ODOO-834
         """
         res = super().write(vals)
-        # Skip balance update during module installation or import
-        if not self.env.context.get('install_mode') and self.env.context.get('check_move_validity', True):
+        # Skip balance update during module installation
+        if not self.env.context.get('install_mode'):
             self._update_balances_incremental()
         return res
 
@@ -238,8 +220,8 @@ class AccountMoveLine(models.Model):
         Пропускає під час встановлення модуля для швидкості.
         ODOO-834
         """
-        # Skip balance cleanup during module installation or import
-        if not self.env.context.get('install_mode') and self.env.context.get('check_move_validity', True):
+        # Skip balance cleanup during module installation
+        if not self.env.context.get('install_mode'):
             self.env['bio.account.move.line.balance'].search([('move_line_id', 'in', self.ids)]).unlink()
         return super().unlink()
 
