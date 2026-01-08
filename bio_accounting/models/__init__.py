@@ -7,5 +7,4 @@ from . import (account_move,
                partner,
                account_bank_statement_line,
                account_journal,
-               account_move_line_balance
                )

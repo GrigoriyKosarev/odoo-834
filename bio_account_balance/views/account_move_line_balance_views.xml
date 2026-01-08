@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
 
-    <!--https://apps.odoo.com/apps/modules/16.0/d_button_near_create_button-->
-    <!-- ODOO-834: Action визначається ПЕРЕД view щоб бути доступним -->
+    <!-- Server action for resetting and updating balances -->
+    <!-- IMPORTANT: Action must be defined BEFORE the view that references it -->
     <record id="bio_action_server_reset_balances" model="ir.actions.server">
         <field name="name">Reset and Update Balances</field>
         <field name="model_id" ref="model_bio_account_move_line_balance"/>
@@ -10,6 +10,7 @@
         <field name="code">action = env['bio.account.move.line.balance'].reset_and_update_balances()</field>
     </record>
 
+    <!-- Tree view with button to reset balances -->
     <record id="bio_account_move_line_balance_view_tree" model="ir.ui.view">
         <field name="name">bio.account.move.line.balance.tree</field>
         <field name="model">bio.account.move.line.balance</field>
@@ -27,15 +28,18 @@
         </field>
     </record>
 
+    <!-- Action window -->
     <record id="bio_account_move_line_balance_action" model="ir.actions.act_window">
-        <field name="name">Update Invoice Data (BIO)</field>
+        <field name="name">Account Move Line Balance</field>
         <field name="res_model">bio.account.move.line.balance</field>
         <field name="view_mode">list</field>
     </record>
 
+    <!-- Menu item in Accounting > Configuration -->
     <menuitem id="bio_account_move_line_balance_menu"
               parent="account.menu_finance_configuration"
               sequence="1001"
               name="Account Move Line Balance"
               action="bio_account_move_line_balance_action"/>
+
 </odoo>

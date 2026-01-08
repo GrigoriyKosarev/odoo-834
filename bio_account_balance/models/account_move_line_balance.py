@@ -45,7 +45,7 @@ class AccountMoveLineBalance(models.Model):
         )
         SELECT
             aml.id AS move_line_id,
-            
+
             COALESCE(
                 SUM(aml.debit - aml.credit) OVER (
                     PARTITION BY aml.account_id, COALESCE(aml.partner_id,0)
@@ -53,7 +53,7 @@ class AccountMoveLineBalance(models.Model):
                     ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
                 ), 0
             ) AS bio_initial_balance,
-            
+
             COALESCE(
                 SUM(aml.debit - aml.credit) OVER (
                     PARTITION BY aml.account_id, COALESCE(aml.partner_id,0)
@@ -61,12 +61,12 @@ class AccountMoveLineBalance(models.Model):
                     ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
                 ), 0
             ) AS bio_end_balance,
-            
+
             aml.company_currency_id
         FROM account_move_line aml
         WHERE aml.parent_state = 'posted'
         ON CONFLICT (move_line_id) DO UPDATE
-        SET 
+        SET
             bio_initial_balance = EXCLUDED.bio_initial_balance,
             bio_end_balance = EXCLUDED.bio_end_balance,
             company_currency_id = EXCLUDED.company_currency_id;

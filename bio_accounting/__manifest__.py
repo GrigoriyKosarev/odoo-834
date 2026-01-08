@@ -15,13 +15,12 @@
                 'us_account_report_invoice',
                 'us_account_report_invoice_polska',
                 'bio_extra',
-                'selferp_l10n_ua_bank_statement_import'
+                'selferp_l10n_ua_bank_statement_import',
+                'bio_account_balance',  # ODOO-834: Balance calculations moved to separate module
                 ],
     'data': ['security/account_security.xml',
              'security/ir.model.access.csv',
              'views/account_move_views.xml',
-             'views/account_move_line_views.xml',
-             'views/account_move_line_balance_views.xml',
              'views/bank_rec_widget_views.xml',
              'views/res_bank_views.xml',
              'views/partner_views.xml',
@@ -36,7 +35,5 @@
             'bio_accounting/static/src/css/bio.css', # ODOO-472
         ],
     },
-    # ODOO-834: Тимчасово відключено для діагностики
-    # 'post_init_hook': 'post_init_update_balances',
     'auto_install': False,
 }
