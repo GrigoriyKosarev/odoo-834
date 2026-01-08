@@ -11,18 +11,22 @@ class AccountMoveLine(models.Model):
         string="Initial Balance",
         currency_field="company_currency_id",
         readonly=True,
+        group_operator=False,  # Не показувати як measure в pivot view
         help="Balance BEFORE the current line (excluding current transaction). "
              "Calculated using SQL window functions with PARTITION BY account+partner. "
-             "Updated automatically via _update_balances_incremental() or manually via 'Reset and Update Balances'."
+             "Updated automatically via _update_balances_incremental() or manually via 'Reset and Update Balances'. "
+             "Not available as pivot measure - use bio_opening_by_partner instead."
     )  # ODOO-834
 
     bio_end_balance = fields.Monetary(
         string="End Balance",
         currency_field="company_currency_id",
         readonly=True,
+        group_operator=False,  # Не показувати як measure в pivot view
         help="Balance AFTER the current line (including current transaction). "
              "Calculated using SQL window functions with PARTITION BY account+partner. "
-             "Updated automatically via _update_balances_incremental() or manually via 'Reset and Update Balances'."
+             "Updated automatically via _update_balances_incremental() or manually via 'Reset and Update Balances'. "
+             "Not available as pivot measure - use bio_closing_by_partner instead."
     )  # ODOO-834
 
     # Dynamic balance fields (НЕ зберігаються, розраховуються в read_group)
