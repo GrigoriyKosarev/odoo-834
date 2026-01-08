@@ -209,28 +209,36 @@ class AccountMoveLine(models.Model):
     def create(self, vals_list):
         """
         Hook для автоматичного оновлення балансів при створенні нових рядків.
+        Пропускає оновлення під час встановлення модуля для швидкості.
         ODOO-834
         """
         lines = super().create(vals_list)
-        lines._update_balances_incremental()
+        # Skip balance update during module installation
+        if not self.env.context.get('install_mode'):
+            lines._update_balances_incremental()
         return lines
 
     def write(self, vals):
         """
         Hook для автоматичного оновлення балансів при зміні рядків.
+        Пропускає оновлення під час встановлення модуля для швидкості.
         ODOO-834
         """
         res = super().write(vals)
-        self._update_balances_incremental()
+        # Skip balance update during module installation
+        if not self.env.context.get('install_mode'):
+            self._update_balances_incremental()
         return res
 
     def unlink(self):
         """
         Hook для видалення балансів перед видаленням рядків.
+        Пропускає під час встановлення модуля для швидкості.
         ODOO-834
         """
-        # Видаляємо рядки з таблиці balances перед видаленням
-        self.env['bio.account.move.line.balance'].search([('move_line_id', 'in', self.ids)]).unlink()
+        # Skip balance cleanup during module installation
+        if not self.env.context.get('install_mode'):
+            self.env['bio.account.move.line.balance'].search([('move_line_id', 'in', self.ids)]).unlink()
         return super().unlink()
 
     def _update_balances_incremental(self):
