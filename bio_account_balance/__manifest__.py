@@ -5,27 +5,15 @@
     'category': 'Accounting',
     'summary': 'Calculate and display opening/closing balances for account move lines',
     'description': """
-        Bio Account Balance Module
-        ==========================
+Calculate cumulative balances using SQL window functions.
+Display initial and end balance for each journal item.
+Dynamic opening/closing balance calculation in pivot view.
+Optimized for large datasets with incremental updates.
+Support for date filtering in pivot view.
 
-        This module adds balance calculation functionality to account.move.line:
+Technical: PostgreSQL window functions, separate balance table, read_group override, direct SQL queries.
 
-        Features:
-        ---------
-        * Calculate cumulative balances using SQL window functions
-        * Display initial and end balance for each journal item
-        * Dynamic opening/closing balance calculation in pivot view
-        * Optimized for large datasets with incremental updates
-        * Support for date filtering in pivot view
-
-        Technical Details:
-        -----------------
-        * Uses PostgreSQL window functions (PARTITION BY, ORDER BY)
-        * Separate balance table for performance (bio.account.move.line.balance)
-        * read_group override for dynamic pivot calculations
-        * Direct SQL queries for optimal performance
-
-        ODOO-834
+ODOO-834
     """,
     'author': 'Bio',
     'website': 'https://bio.com',
