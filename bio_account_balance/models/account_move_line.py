@@ -7,11 +7,11 @@ class AccountMoveLine(models.Model):
 
     # Stored balance fields (зберігаються в БД)
     # Заповнюються через SQL в _update_balances_incremental() або reset_and_update_balances()
+    # НЕ використовуються в pivot view - для pivot є динамічні поля bio_opening/closing_by_partner
     bio_initial_balance = fields.Monetary(
         string="Initial Balance",
         currency_field="company_currency_id",
         readonly=True,
-        group_operator=False,  # Не показувати як measure в pivot view
         help="Balance BEFORE the current line (excluding current transaction). "
              "Calculated using SQL window functions with PARTITION BY account+partner. "
              "Updated automatically via _update_balances_incremental() or manually via 'Reset and Update Balances'. "
@@ -22,7 +22,6 @@ class AccountMoveLine(models.Model):
         string="End Balance",
         currency_field="company_currency_id",
         readonly=True,
-        group_operator=False,  # Не показувати як measure в pivot view
         help="Balance AFTER the current line (including current transaction). "
              "Calculated using SQL window functions with PARTITION BY account+partner. "
              "Updated automatically via _update_balances_incremental() or manually via 'Reset and Update Balances'. "
@@ -63,20 +62,31 @@ class AccountMoveLine(models.Model):
         - opening = баланс на початок періоду
         - closing = баланс на кінець періоду
 
+        Поля bio_initial_balance і bio_end_balance виключені з агрегації в pivot,
+        тому що їх sum() не має сенсу (це поля для окремих рядків, не для груп).
+
         ODOO-834
         """
         # Список полів які треба розрахувати динамічно
         dynamic_fields = ['bio_opening_by_partner', 'bio_closing_by_partner']
 
+        # Поля які треба виключити з агрегації (не показувати в pivot measures)
+        excluded_fields = ['bio_initial_balance', 'bio_end_balance']
+
         # Перевіряємо чи запитують хоча б одне динамічне поле
         requested_dynamic_fields = [f for f in fields if any(df in f for df in dynamic_fields)]
 
+        # Фільтруємо поля для передачі в super().read_group()
+        # Виключаємо як динамічні, так і заборонені для агрегації поля
+        excluded_all = dynamic_fields + excluded_fields
+        other_fields = [f for f in fields if not any(ef in f for ef in excluded_all)]
+
         if not requested_dynamic_fields:
             # Якщо не запитують динамічні поля - викликаємо стандартний read_group
-            return super().read_group(domain, fields, groupby, offset, limit, orderby, lazy)
+            # але все одно виключаємо поля які не можна агрегувати
+            return super().read_group(domain, other_fields, groupby, offset, limit, orderby, lazy)
 
-        # Викликаємо стандартний read_group для всіх інших полів
-        other_fields = [f for f in fields if not any(df in f for df in dynamic_fields)]
+        # Викликаємо стандартний read_group тільки для дозволених полів
         result = super().read_group(domain, other_fields, groupby, offset, limit, orderby, lazy)
 
         # Для кожної групи розраховуємо динамічні поля
