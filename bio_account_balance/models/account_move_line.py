@@ -213,8 +213,10 @@ class AccountMoveLine(models.Model):
         ODOO-834
         """
         lines = super().create(vals_list)
-        # Skip balance update during module installation
-        if not self.env.context.get('install_mode'):
+        # Skip balance update during module installation or import
+        # install_mode - наш кастомний прапорець для ручного контролю
+        # check_move_validity=False - Odoo встановлює під час імпорту даних
+        if not self.env.context.get('install_mode') and self.env.context.get('check_move_validity', True):
             lines._update_balances_incremental()
         return lines
 
@@ -225,8 +227,8 @@ class AccountMoveLine(models.Model):
         ODOO-834
         """
         res = super().write(vals)
-        # Skip balance update during module installation
-        if not self.env.context.get('install_mode'):
+        # Skip balance update during module installation or import
+        if not self.env.context.get('install_mode') and self.env.context.get('check_move_validity', True):
             self._update_balances_incremental()
         return res
 
@@ -236,8 +238,8 @@ class AccountMoveLine(models.Model):
         Пропускає під час встановлення модуля для швидкості.
         ODOO-834
         """
-        # Skip balance cleanup during module installation
-        if not self.env.context.get('install_mode'):
+        # Skip balance cleanup during module installation or import
+        if not self.env.context.get('install_mode') and self.env.context.get('check_move_validity', True):
             self.env['bio.account.move.line.balance'].search([('move_line_id', 'in', self.ids)]).unlink()
         return super().unlink()
 
