@@ -21,6 +21,5 @@
     'installable': True,
     'application': False,
     'auto_install': False,
-    # ODOO-834: Post-init hook disabled - run "Reset and Update" manually after installation
-    # 'post_init_hook': 'post_init_update_balances',
+    'post_init_hook': 'post_init_update_balances',
 }
