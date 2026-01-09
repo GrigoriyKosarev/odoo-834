@@ -29,30 +29,3 @@ def post_init_update_balances(cr, registry):
     except Exception as e:
         _logger.error(">>> bio_account_balance: post_init_update_balances FAIL: %s <<<", str(e), exc_info=True)
 
-
-def pre_uninstall_cleanup(cr, registry):
-    """
-    Pre-uninstall hook для очищення views та метаданих.
-    Викликається перед видаленням модуля.
-
-    Це запобігає помилкам "Cannot read properties of undefined"
-    в pivot view після видалення модуля.
-
-    ODOO-834
-    """
-    try:
-        _logger.info(">>> bio_account_balance: pre_uninstall_cleanup START <<<")
-        env = api.Environment(cr, SUPERUSER_ID, {})
-
-        # Видаляємо views модуля
-        views = env['ir.ui.view'].search([
-            ('name', 'ilike', 'bio.account.balance'),
-        ])
-        if views:
-            _logger.info(f"Deleting {len(views)} views: {views.mapped('name')}")
-            views.unlink()
-
-        _logger.info(">>> bio_account_balance: pre_uninstall_cleanup END (SUCCESS) <<<")
-    except Exception as e:
-        _logger.error(">>> bio_account_balance: pre_uninstall_cleanup FAIL: %s <<<", str(e), exc_info=True)
-
