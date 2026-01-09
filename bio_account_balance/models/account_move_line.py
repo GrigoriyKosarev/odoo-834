@@ -301,3 +301,16 @@ class AccountMoveLine(models.Model):
                 company_currency_id = EXCLUDED.company_currency_id;
             """
         self.env.cr.execute(query, (tuple(lines_to_update.ids),))
+
+        # Синхронізація розрахованих балансів назад в account_move_line
+        self.env.cr.execute("""
+            UPDATE account_move_line aml
+            SET bio_initial_balance = bal.bio_initial_balance,
+                bio_end_balance     = bal.bio_end_balance
+            FROM bio_account_move_line_balance bal
+            WHERE bal.move_line_id = aml.id
+              AND aml.id IN %s;
+        """, (tuple(lines_to_update.ids),))
+
+        # Інвалідуємо кеш щоб Odoo перечитав нові значення
+        lines_to_update.invalidate_recordset(['bio_initial_balance', 'bio_end_balance'])
