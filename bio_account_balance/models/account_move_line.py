@@ -33,6 +33,7 @@ class AccountMoveLine(models.Model):
     bio_opening_by_partner = fields.Monetary(
         string="Opening Balance",
         currency_field="company_currency_id",
+        store=False,  # Не зберігається в БД, розраховується динамічно
         readonly=True,
         help="Dynamic opening balance for partner grouping based on pivot filters. "
              "Calculated in read_group() method. "
@@ -43,6 +44,7 @@ class AccountMoveLine(models.Model):
     bio_closing_by_partner = fields.Monetary(
         string="Closing Balance",
         currency_field="company_currency_id",
+        store=False,  # Не зберігається в БД, розраховується динамічно
         readonly=True,
         help="Dynamic closing balance for partner grouping based on pivot filters. "
              "Calculated in read_group() method. "
