@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_bio_account_move_line_balance_user,bio.account.move.line.balance user,model_bio_account_move_line_balance,account.group_account_user,1,0,0,0
+access_bio_account_move_line_balance_readonly,bio.account.move.line.balance readonly,model_bio_account_move_line_balance,account.group_account_readonly,1,0,0,0
+access_bio_account_move_line_balance_user,bio.account.move.line.balance user,model_bio_account_move_line_balance,account.group_account_user,1,1,1,1
 access_bio_account_move_line_balance_manager,bio.account.move.line.balance manager,model_bio_account_move_line_balance,account.group_account_manager,1,1,1,1
